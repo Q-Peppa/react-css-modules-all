@@ -1,8 +1,24 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>react.css.module.q</id>
-    <name>react.css.module.q</name>
-    <vendor>0.0.1</vendor>
+    <id>react.css.module.all</id>
+    <name>react.css.module.all</name>
+    <version>0.0.1</version>
+    <vendor>Peppa</vendor>
+    <description><![CDATA[
+     <p>react-css-module-all</p>
+     <h4>support father selector in scss file</h4>
+     <ul>
+         <li>auto detected css module classname add completion</li>
+         <li>enable support & in scss file</li>
+         <li>find reference support</li>
+     </ul>
+     <h2>NOT SUPPORT</h2>
+     <ul>
+        <li>hover show style content</li>
+        <li>remove :global selector</li>
+        <li>.fooBar auto transform ['foo-bar']</li>
+     </ul>
+    ]]> </description>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
