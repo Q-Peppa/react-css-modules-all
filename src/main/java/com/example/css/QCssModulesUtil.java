@@ -22,7 +22,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.css.*;
-import com.intellij.psi.css.impl.CssSelectorImpl;
 import com.intellij.psi.filters.ElementFilter;
 import com.intellij.psi.filters.position.FilterPattern;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -30,13 +29,14 @@ import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlAttributeValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jsoup.internal.StringUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility methods for navigating PSI trees with regards to CSS Modules.
  */
-public class CssModulesUtil {
-
+public class QCssModulesUtil {
     /**
      * Filters to "styleName" React attributes.
      */
@@ -122,25 +122,27 @@ public class CssModulesUtil {
      * @param cssClass       the class to find, including the leading ".", e.g. ".my-class-name"
      * @return the matching class or <code>null</code> if no matches are found
      */
-    public static CssSimpleSelector getCssClass(StylesheetFile stylesheetFile, String cssClass) {
-        final Ref<CssSimpleSelector> cssClassRef = new Ref<>();
-        String[] pre = {""};
+    public static CssSelector getCssClass(StylesheetFile stylesheetFile, String cssClass) {
+        final Ref<CssSelector> cssClassRef = new Ref<>();
         stylesheetFile.accept(new PsiRecursiveElementVisitor() {
             @Override
             public void visitElement(@NotNull PsiElement element) {
                 if (cssClassRef.get() != null) {
                     return;
                 }
-                if (element instanceof CssSimpleSelector) {
-                    String text = element.getText(); // .app , &-foo;
-                    if(!pre[0].isEmpty() && text.startsWith("&")) {
-                        text = text.replace("&" , pre[0]);
+                if (element instanceof CssSelector) {
+                    String name = ((CssSelector) element).getPresentableText();
+                    if (cssClass.equals(name)) {
+                        cssClassRef.set((CssSelector) element);
+                        return ;
                     }
-                    if (cssClass.equals(text) || text.endsWith(cssClass)) {
-                        cssClassRef.set((CssSimpleSelector) element);
-                        return;
+                    if(name.startsWith("&")) {
+                        name = name.replaceFirst("&", "");
+                        if(cssClass.endsWith(name)) {
+                            cssClassRef.set((CssSelector) element);
+                            return ;
+                        }
                     }
-                    pre[0] = text ;
                 }
                 super.visitElement(element);
             }
@@ -225,7 +227,7 @@ public class CssModulesUtil {
      * @param referencedStyleSheet     ref to set to the style sheet that any matching CSS class is declared in
      * @return the matching CSS class, or <code>null</code> in case the class is unknown
      */
-    public static CssSimpleSelector getCssClass(PsiElement cssFileNameLiteralParent, String cssClass, Ref<StylesheetFile> referencedStyleSheet) {
+    public static CssSelector getCssClass(PsiElement cssFileNameLiteralParent, String cssClass, Ref<StylesheetFile> referencedStyleSheet) {
         StylesheetFile stylesheetFile = resolveStyleSheetFile(cssFileNameLiteralParent);
         if (stylesheetFile != null) {
             referencedStyleSheet.set(stylesheetFile);
@@ -254,4 +256,29 @@ public class CssModulesUtil {
         return false;
     }
 
+    /**
+     * 寻找当前CssRuleset最近,上一级的的CssRuleset
+     * @param  cssRuleset
+     * @return CssRuleset
+     */
+    private static CssRuleset findPreFatherRuleSet(CssRuleset cssRuleset){
+        return cssRuleset;
+    }
+
+    /**
+     * 获得CssRuleset所有的类名
+     * @example
+     * .lp , .demo{} => ["lp" , "demo"]
+     * .lp{} =>["lp"]
+     */
+    private static List<String> getCssRuleSetAllNameWithoutDot(CssRuleset cssRuleset){
+        List<String> res = new ArrayList<>();
+
+        if(cssRuleset == null) return res;
+        for(CssSelector cssSelector : cssRuleset.getSelectors()){
+            res.add(cssSelector.getPresentableText());
+        }
+
+        return res;
+    }
 }

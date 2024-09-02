@@ -5,9 +5,7 @@ import com.intellij.lang.javascript.psi.JSLiteralExpression;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
-import com.intellij.psi.css.CssClass;
-import com.intellij.psi.css.CssSimpleSelector;
-import com.intellij.psi.css.StylesheetFile;
+import com.intellij.psi.css.*;
 import com.intellij.util.ProcessingContext;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -48,15 +46,15 @@ public class CssModulesIndexedStylesVarPsiReferenceContributor extends PsiRefere
 
     @Override
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
-        registrar.registerReferenceProvider(CssModulesUtil.STRING_PATTERN, new PsiReferenceProvider() {
+        registrar.registerReferenceProvider(QCssModulesUtil.STRING_PATTERN, new PsiReferenceProvider() {
             @NotNull
             @Override
             public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element, @NotNull ProcessingContext context) {
-                final PsiElement cssClassNamesImportOrRequire = CssModulesUtil.getCssClassNamesImportOrRequireDeclaration((JSLiteralExpression) element);
+                final PsiElement cssClassNamesImportOrRequire = QCssModulesUtil.getCssClassNamesImportOrRequireDeclaration((JSLiteralExpression) element);
                 if (cssClassNamesImportOrRequire != null) {
                     final String literalClass = "." + StringUtils.stripStart(StringUtils.stripEnd(element.getText(), "\"'"), "\"'");
                     final Ref<StylesheetFile> referencedStyleSheet = new Ref<>();
-                    final CssSimpleSelector cssClass = CssModulesUtil.getCssClass(cssClassNamesImportOrRequire, literalClass, referencedStyleSheet);
+                    final CssSelector cssClass = QCssModulesUtil.getCssClass(cssClassNamesImportOrRequire, literalClass, referencedStyleSheet);
                     if (cssClass != null) {
                         return new PsiReference[]{new PsiReferenceBase<PsiElement>(element) {
                             @Override
