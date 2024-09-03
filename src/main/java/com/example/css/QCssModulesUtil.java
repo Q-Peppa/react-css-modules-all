@@ -1,10 +1,4 @@
-/*
- * Copyright (c) 2016-present, Jim Kynde Meyer
- * All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+
 package com.example.css;
 
 import com.intellij.lang.ASTNode;
@@ -16,6 +10,7 @@ import com.intellij.lang.javascript.psi.JSIndexedPropertyAccessExpression;
 import com.intellij.lang.javascript.psi.JSLiteralExpression;
 import com.intellij.lang.javascript.psi.JSVariable;
 import com.intellij.openapi.util.Ref;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.patterns.PsiElementPattern;
 import com.intellij.psi.PsiElement;
@@ -25,95 +20,50 @@ import com.intellij.psi.css.*;
 import com.intellij.psi.filters.ElementFilter;
 import com.intellij.psi.filters.position.FilterPattern;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.psi.xml.XmlAttribute;
-import com.intellij.psi.xml.XmlAttributeValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 
 /**
  * Utility methods for navigating PSI trees with regards to CSS Modules.
  */
 public class QCssModulesUtil {
+
+    private static final String COMMA = ",";
+    private static final String DOT = ".";
+    private static final String SPACE = " ";
     /**
-     * Filters to "styleName" React attributes.
+     * 需要连接父亲的名字
      */
-    public static final ElementFilter STYLE_NAME_FILTER = new ElementFilter() {
+    private static final String CONNECT_FLAG = "&";
+
+    /**
+     * @description 保存了 classname 和 CssSelector[] 的对应关系
+     */
+    public static final HashMap<String, CssSelector[]> psiElementRefHashMap = new HashMap<>();
+    public static final HashSet<String> alreadyProcess = new HashSet<>();
+
+
+    /**
+     * PSI Pattern for matching string literals, e.g. the 'normal' in styles['normal']
+     */
+    public static final PsiElementPattern.Capture<JSLiteralExpression> STRING_PATTERN = PlatformPatterns.psiElement(JSLiteralExpression.class).and(new FilterPattern(new ElementFilter() {
         @Override
         public boolean isAcceptable(Object element, @Nullable PsiElement context) {
-            if (element instanceof XmlAttributeValue && context != null && context.getContainingFile() instanceof JSFile) {
-                final XmlAttributeValue value = (XmlAttributeValue) element;
-                final XmlAttribute xmlAttribute = PsiTreeUtil.getParentOfType(value, XmlAttribute.class);
-                if (xmlAttribute != null) {
-                    return xmlAttribute.getName().equals("styleName");
-                }
+            if (element instanceof JSLiteralExpression && context != null && context.getContainingFile() instanceof JSFile) {
+                final ASTNode value = ((JSLiteralExpression) element).getNode().getFirstChildNode();
+                return value != null && value.getElementType() == JSTokenTypes.STRING_LITERAL;
             }
             return false;
         }
 
         @Override
         public boolean isClassAcceptable(Class hintClass) {
-            return XmlAttributeValue.class.isAssignableFrom(hintClass);
+            return JSLiteralExpression.class.isAssignableFrom(hintClass);
         }
-    };
-
-    /**
-     * PSI Pattern for matching "styleName" React attributes.
-     */
-    public static final PsiElementPattern.Capture<XmlAttributeValue> STYLE_NAME_PATTERN = PlatformPatterns
-            .psiElement(XmlAttributeValue.class)
-            .and(new FilterPattern(STYLE_NAME_FILTER));
-
-
-    /**
-     * PSI Pattern for matching string literals, e.g. the 'normal' in styles['normal']
-     */
-    public static final PsiElementPattern.Capture<JSLiteralExpression> STRING_PATTERN = PlatformPatterns.
-            psiElement(JSLiteralExpression.class)
-            .and(new FilterPattern(new ElementFilter() {
-                @Override
-                public boolean isAcceptable(Object element, @Nullable PsiElement context) {
-                    if (element instanceof JSLiteralExpression && context != null && context.getContainingFile() instanceof JSFile) {
-                        final ASTNode value = ((JSLiteralExpression) element).getNode().getFirstChildNode();
-                        return value != null && value.getElementType() == JSTokenTypes.STRING_LITERAL;
-                    }
-                    return false;
-                }
-
-                @Override
-                public boolean isClassAcceptable(Class hintClass) {
-                    return JSLiteralExpression.class.isAssignableFrom(hintClass);
-                }
-            }));
-
-
-    /**
-     * Visits the containing file of the specified element to find a require to a style sheet file
-     *
-     * @param cssReferencingElement starting point for finding an imported style sheet file
-     * @return the PSI file for the first imported style sheet file
-     */
-    public static StylesheetFile getImportedStyleSheetFile(PsiElement cssReferencingElement) {
-        final Ref<StylesheetFile> file = new Ref<>();
-        cssReferencingElement.getContainingFile().accept(new PsiRecursiveElementVisitor() {
-            @Override
-            public void visitElement(PsiElement element) {
-                if (file.get() != null) {
-                    return;
-                }
-                if (element instanceof JSLiteralExpression) {
-                    if (resolveStyleSheetFile(element, file)) return;
-                }
-                if(element instanceof ES6FromClause) {
-                    if (resolveStyleSheetFile(element, file)) return;
-                }
-                super.visitElement(element);
-            }
-        });
-        return file.get();
-    }
+    }));
 
     /**
      * Gets the CssClass PSI element whose name matches the specified cssClassName
@@ -123,46 +73,8 @@ public class QCssModulesUtil {
      * @return the matching class or <code>null</code> if no matches are found
      */
     public static CssSelector getCssClass(StylesheetFile stylesheetFile, String cssClass) {
-        final Ref<CssSelector> cssClassRef = new Ref<>();
-        stylesheetFile.accept(new PsiRecursiveElementVisitor() {
-            @Override
-            public void visitElement(@NotNull PsiElement element) {
-                if (cssClassRef.get() != null) {
-                    return;
-                }
-                if (element instanceof CssSelector) {
-                    String name = ((CssSelector) element).getPresentableText();
-                    if (cssClass.equals(name)) {
-                        cssClassRef.set((CssSelector) element);
-                        return ;
-                    }
-                    if(name.startsWith("&")) {
-                        name = name.replaceFirst("&", "");
-                        if(cssClass.endsWith(name)) {
-                            cssClassRef.set((CssSelector) element);
-                            return ;
-                        }
-                    }
-                }
-                super.visitElement(element);
-            }
-        });
-        return cssClassRef.get();
-    }
-
-    /**
-     * Gets whether the specified CSS class is a CSS Modules class.
-     * Classes nested in :global are considered false.
-     */
-    public static boolean isCssModuleClass(CssClass cssClass) {
-        final CssFunction parentFunction = PsiTreeUtil.getParentOfType(cssClass, CssFunction.class);
-        if(parentFunction != null) {
-            if("global".equals(parentFunction.getName())) {
-                // not a generated CSS Modules class
-                return false;
-            }
-        }
-        return true;
+        if (psiElementRefHashMap.containsKey(cssClass)) return psiElementRefHashMap.get(cssClass)[0];
+        return PsiTreeUtil.getChildOfType(stylesheetFile, CssSelector.class);
     }
 
 
@@ -184,7 +96,7 @@ public class QCssModulesUtil {
                     if (varReference instanceof JSVariable) {
                         return varReference;
                     }
-                    if(varReference instanceof ES6ImportedBinding) {
+                    if (varReference instanceof ES6ImportedBinding) {
                         return varReference.getParent();
                     }
                 }
@@ -210,7 +122,7 @@ public class QCssModulesUtil {
                 if (element instanceof JSLiteralExpression) {
                     if (resolveStyleSheetFile(element, stylesheetFileRef)) return;
                 }
-                if(element instanceof ES6FromClause) {
+                if (element instanceof ES6FromClause) {
                     if (resolveStyleSheetFile(element, stylesheetFileRef)) return;
                 }
                 super.visitElement(element);
@@ -256,29 +168,122 @@ public class QCssModulesUtil {
         return false;
     }
 
+    private static void processMultiSelector(String className, HashSet<String> alreadyProcess, CssRuleset cssRuleset) {
+        for (String s : className.split(className.contains(COMMA) ? COMMA : SPACE)) {
+            alreadyProcess.add(StringUtil.trim(s));
+            QCssModulesUtil.psiElementRefHashMap.put(s, cssRuleset.getSelectors());
+        }
+    }
+
     /**
      * 寻找当前CssRuleset最近,上一级的的CssRuleset
-     * @param  cssRuleset
+     * @param cssRuleset
      * @return CssRuleset
      */
-    private static CssRuleset findPreFatherRuleSet(CssRuleset cssRuleset){
-        return cssRuleset;
+    public static CssRuleset findPreFatherRuleSet(PsiElement cssRuleset) {
+//         顶层， 没有父亲，返回自身
+        if (cssRuleset.getParent() instanceof CssRulesetList) return (CssRuleset) cssRuleset;
+        // 中间层， 可以找到父亲
+        if (cssRuleset.getParent() instanceof CssRuleset) return (CssRuleset) cssRuleset.getParent();
+        return findPreFatherRuleSet(cssRuleset.getParent());
+//        return PsiTreeUtil.getParentOfType(cssRuleset, CssRuleset.class);
     }
 
     /**
      * 获得CssRuleset所有的类名
-     * @example
-     * .lp , .demo{} => ["lp" , "demo"]
+     * @example .lp , .demo{} => ["lp" , "demo"]
      * .lp{} =>["lp"]
      */
-    private static List<String> getCssRuleSetAllNameWithoutDot(CssRuleset cssRuleset){
-        List<String> res = new ArrayList<>();
-
-        if(cssRuleset == null) return res;
-        for(CssSelector cssSelector : cssRuleset.getSelectors()){
+    public static LinkedList<String> getCssRuleSetAllNameWithDot(CssRuleset cssRuleset) {
+        LinkedList<String> res = new LinkedList<>();
+        if (cssRuleset == null) return res;
+        for (CssSelector cssSelector : cssRuleset.getSelectors()) {
             res.add(cssSelector.getPresentableText());
         }
-
         return res;
+    }
+
+    public static String parseClass(CssRuleset cssClass) {
+        String name = cssClass.getPresentableText();
+        // 不处理任何其他情况， 仅仅处理 . 和 & 开头的选择器
+        if (!name.startsWith(DOT) && !name.startsWith(CONNECT_FLAG)) return null;
+        if (name.startsWith(":global")) return null;
+        if (name.startsWith(DOT)) {
+            CssRuleset father = QCssModulesUtil.findPreFatherRuleSet(cssClass);
+            LinkedList<String> fatherName = QCssModulesUtil.getCssRuleSetAllNameWithDot(father);
+            if (fatherName.size() == 1 && fatherName.getFirst().startsWith(":global")) return null;
+            return name;
+        }
+
+        name = name.replaceFirst(CONNECT_FLAG, "");
+
+        while (true) {
+            CssRuleset father = QCssModulesUtil.findPreFatherRuleSet(cssClass);
+            if (father instanceof CssStylesheet) break;
+            LinkedList<String> fatherName = QCssModulesUtil.getCssRuleSetAllNameWithDot(father);
+
+            final String cssSelectorName = fatherName.getFirst();
+            if (cssSelectorName.startsWith(DOT)) {
+                // ｜  .app{} ｜ .app .demo{} ｜  .app, .demo{} ｜  三种情况
+                if (fatherName.size() == 1) {
+                    if (!cssSelectorName.contains(SPACE))
+                        // .app{}
+                        return fatherName.getFirst() + name;
+                    else {
+                        // .app .xyz{}
+                        String[] names = cssSelectorName.split(SPACE);
+                        return names[names.length - 1] + name;
+                    }
+                }
+                // .app , .xyz
+                StringBuilder ans = new StringBuilder();
+                for (String f : fatherName) {
+                    ans.append(f).append(name).append(",");
+                }
+                return ans.substring(0, ans.length() - 1);
+            } else {
+                cssClass = father;
+                name = fatherName.getLast() + name;
+                name = name.replaceFirst(CONNECT_FLAG, "");
+            }
+        }
+
+        return name;
+    }
+
+    /**
+     * 代码预处理, 获取所有的类名, 以及类名对应的 PsiElement, 方便做代码跳转
+     */
+    public static void preLoad(@NotNull StylesheetFile stylesheetFile) {
+        psiElementRefHashMap.clear();
+        alreadyProcess.clear();
+        for (CssRuleset cssClass : PsiTreeUtil.findChildrenOfType(stylesheetFile, CssRuleset.class)) {
+            try {
+                if (isInTheGlobal(cssClass)) continue;
+                String cssName = parseClass(cssClass);
+                if (cssName == null) continue;
+                if (cssName.contains(SPACE) || cssName.contains(COMMA)) {
+                    processMultiSelector(cssName, alreadyProcess, cssClass);
+                    continue;
+                }
+                alreadyProcess.add(StringUtil.trim(cssName));
+                QCssModulesUtil.psiElementRefHashMap.put(cssName, cssClass.getSelectors());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+    }
+
+    /**
+     * 判断某一个类是否为 :global 的子级, 无论深度
+     * @param element
+     * @return
+     */
+    public static boolean isInTheGlobal(PsiElement element){
+        CssRuleset parent = (CssRuleset) PsiTreeUtil.findFirstParent(element, e ->
+                e instanceof CssRuleset && ((CssRuleset) e).getPresentableText().contains(":global")
+        );
+        return parent != null;
     }
 }
