@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>react.css.module.all</id>
     <name>react.css.module.all</name>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <vendor>Peppa</vendor>
     <description><![CDATA[
      <p>react-css-module-all</p>
@@ -18,7 +18,17 @@
         <li>remove :global selector</li>
         <li>.fooBar auto transform ['foo-bar']</li>
      </ul>
-    ]]> </description>
+    ]]></description>
+
+    <change-notes><![CDATA[
+        <h2>0.0.2</h2>
+        <h3>New Feature</h3>
+        <ul>
+            <li>简单支持了scss & 选择器</li>
+            <li>支持跳转到 style 内部</li>
+            <li>支持逗号分隔的选择器</li>
+        </ul>
+]]></change-notes>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
