@@ -36,15 +36,14 @@ final class CssModulesClassNameCompletionContributor extends CompletionContribut
 
     CssModulesClassNameCompletionContributor() {
 
-        var provider = new CompletionProvider() {
+        var provider = new CompletionProvider<>() {
 
 
             @Override
             protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext processingContext, @NotNull CompletionResultSet completionResultSet) {
 
                 final PsiElement completionElement = Optional.ofNullable(parameters.getOriginalPosition()).orElse(parameters.getPosition());
-                if (completionElement.getParent() instanceof JSLiteralExpression) {
-                    JSLiteralExpression literalExpression = (JSLiteralExpression) completionElement.getParent();
+                if (completionElement.getParent() instanceof JSLiteralExpression literalExpression) {
                     final PsiElement cssClassNamesImportOrRequire = QCssModulesUtil.getCssClassNamesImportOrRequireDeclaration(literalExpression);
                     if (cssClassNamesImportOrRequire != null) {
                         final StylesheetFile stylesheetFile = QCssModulesUtil.resolveStyleSheetFile(cssClassNamesImportOrRequire);
@@ -55,49 +54,68 @@ final class CssModulesClassNameCompletionContributor extends CompletionContribut
                 }
             }
 
-            private void addCompletions(@NotNull CompletionResultSet resultSet, @NotNull StylesheetFile stylesheetFile) {
+
+            private void resolveNormalClassName(@NotNull CompletionResultSet resultSet, @NotNull StylesheetFile stylesheetFile) {
                 if (stylesheetFile.getParent() == null) return;
                 final String folderName = stylesheetFile.getParent().getName();
                 final String fileName = stylesheetFile.getName();
+                for (CssClass aClass : PsiTreeUtil.findChildrenOfType(stylesheetFile, CssClass.class)) {
+                    if (QCssModulesUtil.isInTheGlobal(aClass)) continue;
+                    String name = aClass.getText();
 
-                /**
-                 * core 方法 收集全部的class name
-                 */
-                QCssModulesUtil.preLoad(stylesheetFile);
+                    if (QCssModulesUtil.alreadyProcess.contains(name)) continue;
 
-                for (String already : QCssModulesUtil.alreadyProcess) {
-                    CssSelector[] selectors = QCssModulesUtil.psiElementRefHashMap.get(already);
-                    final String name = StringUtils.trim(already.replaceFirst(".", ""));
-                    if (name.contains(":global")) continue;
-                    if (selectors == null || selectors.length == 0) continue;
-                    final String desc = " (" + folderName + "/" + fileName + ":" + selectors[0].getLineNumber() + ")_by_css_module_all";
-                    resultSet.addElement(buildLookupElement(name, desc, selectors[0]));
+                    QCssModulesUtil.alreadyProcess.add(name);
+                    CssRuleset ruleset = aClass.getRuleset();
+                    if (ruleset != null) {
+                        CssSelector[] selectors = ruleset.getSelectors();
+                        final String desc = " (" + folderName + "/" + fileName + ":" + selectors[0].getLineNumber() + ")_by_css_module_all";
+                        QCssModulesUtil.psiElementRefHashMap.put(name, selectors);
+                        final String cssName = StringUtils.trim(name.replaceFirst(".", ""));
+                        resultSet.addElement(buildLookupElement(cssName, desc, selectors[0]));
+                    }
+
                 }
-
-                /**
-                 * 可能有些CssName 没有收集到
-                 */
-                for (var cssClass : PsiTreeUtil.findChildrenOfType(stylesheetFile, CssClass.class)) {
-                    String name = cssClass.getText();
-                    if (QCssModulesUtil.psiElementRefHashMap.containsKey(name)) continue;
-                    final String cssName = StringUtils.trim(name.replaceFirst(".", ""));
-                    CssSelectorList f = (CssSelectorList) PsiTreeUtil.findFirstParent(cssClass, e -> e instanceof CssSelectorList);
-
-                    if (QCssModulesUtil.isInTheGlobal(cssClass)) continue;
-                    if (f == null) continue;
-                    QCssModulesUtil.psiElementRefHashMap.put(StringUtils.trim(name), f.getSelectors());
-                    final String desc = " (" + folderName + "/" + fileName + ":" + cssClass.getLineNumber() + ")_by_css_module_all";
-                    resultSet.addElement(
-                            buildLookupElement(cssName, desc, cssClass)
-
-                    );
-                }
-
             }
 
+            private void resolveScssParentSelector(@NotNull CompletionResultSet resultSet, @NotNull StylesheetFile stylesheetFile) {
+                if (stylesheetFile.getParent() == null) return;
+                final String folderName = stylesheetFile.getParent().getName();
+                final String fileName = stylesheetFile.getName();
+                for (CssSimpleSelector simpleSelector : PsiTreeUtil.findChildrenOfType(stylesheetFile, CssSimpleSelector.class)) {
+                    String text = StringUtils.trim(simpleSelector.getText());
+                    if (!text.startsWith("&") || QCssModulesUtil.isInTheGlobal(simpleSelector)) continue;
+                    /**
+                     * &-foo 到 最顶层的全路径
+                     */
+                    final ArrayList<String> path = new ArrayList<>();
 
+                    PsiTreeUtil.findFirstParent(simpleSelector, parent -> {
+                        if (parent instanceof CssRuleset) {
+                            path.add(((CssRuleset) parent).getPresentableText());
+                            return ((CssRuleset) parent).getPresentableText().startsWith(".");
+                        }
+                        return false;
+                    });
+                    CssSelector selectors = (CssSelector) simpleSelector.getParent();
+                    // 倒转css class 的顺序
+                    ArrayList<String> cssList = QScssUtil.getOriginCss(path.reversed());
+                    final String desc = " (" + folderName + "/" + fileName + ":" + selectors.getLineNumber() + ")_by_css_module_all";
+                    for (String name : cssList) {
+                        QCssModulesUtil.psiElementRefHashMap.put(name, new CssSelector[]{selectors});
+                        final String cssName = StringUtils.trim(name.replaceFirst(".", ""));
+                        resultSet.addElement(buildLookupElement(cssName, desc, selectors));
+                    }
+
+                }
+            }
+
+            private void addCompletions(@NotNull CompletionResultSet resultSet, @NotNull StylesheetFile stylesheetFile) {
+                QCssModulesUtil.initContainer(); // init all classname tracker
+                resolveNormalClassName(resultSet, stylesheetFile); // resolve startWith DOT class ,
+                resolveScssParentSelector(resultSet, stylesheetFile);
+            }
         };
-
 
         extend(CompletionType.BASIC, PlatformPatterns.psiElement(), provider);
 

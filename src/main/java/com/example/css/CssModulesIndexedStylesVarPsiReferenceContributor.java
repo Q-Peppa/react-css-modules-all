@@ -29,13 +29,12 @@ public class CssModulesIndexedStylesVarPsiReferenceContributor extends PsiRefere
                 if (cssClassNamesImportOrRequire != null) {
                     final String literalClass = "." + StringUtils.stripStart(StringUtils.stripEnd(element.getText(), "\"'"), "\"'");
                     final Ref<StylesheetFile> referencedStyleSheet = new Ref<>();
-                    final CssSelector cssClass = Optional.ofNullable(QCssModulesUtil.getCssClass(cssClassNamesImportOrRequire, literalClass, referencedStyleSheet))
-                            .orElse(PsiTreeUtil.findChildOfAnyType(referencedStyleSheet.get() , CssSelector.class));
-                    if (cssClass != null) {
+                    final PsiElement psiElement = QCssModulesUtil.getCssClass(cssClassNamesImportOrRequire, literalClass, referencedStyleSheet);
+                    if (psiElement != null) {
                         return new PsiReference[]{new PsiReferenceBase<PsiElement>(element) {
                             @Override
                             public @NotNull PsiElement resolve() {
-                                return cssClass;
+                                return psiElement;
                             }
 
                             @NotNull

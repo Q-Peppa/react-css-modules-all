@@ -46,6 +46,10 @@ public class QCssModulesUtil {
     public static final HashSet<String> alreadyProcess = new HashSet<>();
 
 
+    public static void initContainer(){
+        psiElementRefHashMap.clear();
+        alreadyProcess.clear();
+    }
     /**
      * PSI Pattern for matching string literals, e.g. the 'normal' in styles['normal']
      */
@@ -166,113 +170,6 @@ public class QCssModulesUtil {
             }
         }
         return false;
-    }
-
-    private static void processMultiSelector(String className, HashSet<String> alreadyProcess, CssRuleset cssRuleset) {
-        for (String s : className.split(className.contains(COMMA) ? COMMA : SPACE)) {
-            alreadyProcess.add(StringUtil.trim(s));
-            QCssModulesUtil.psiElementRefHashMap.put(s, cssRuleset.getSelectors());
-        }
-    }
-
-    /**
-     * 寻找当前CssRuleset最近,上一级的的CssRuleset
-     * @param cssRuleset
-     * @return CssRuleset
-     */
-    public static CssRuleset findPreFatherRuleSet(PsiElement cssRuleset) {
-//         顶层， 没有父亲，返回自身
-        if (cssRuleset.getParent() instanceof CssRulesetList) return (CssRuleset) cssRuleset;
-        // 中间层， 可以找到父亲
-        if (cssRuleset.getParent() instanceof CssRuleset) return (CssRuleset) cssRuleset.getParent();
-        return findPreFatherRuleSet(cssRuleset.getParent());
-//        return PsiTreeUtil.getParentOfType(cssRuleset, CssRuleset.class);
-    }
-
-    /**
-     * 获得CssRuleset所有的类名
-     * @example .lp , .demo{} => ["lp" , "demo"]
-     * .lp{} =>["lp"]
-     */
-    public static LinkedList<String> getCssRuleSetAllNameWithDot(CssRuleset cssRuleset) {
-        LinkedList<String> res = new LinkedList<>();
-        if (cssRuleset == null) return res;
-        for (CssSelector cssSelector : cssRuleset.getSelectors()) {
-            res.add(cssSelector.getPresentableText());
-        }
-        return res;
-    }
-
-    public static String parseClass(CssRuleset cssClass) {
-        String name = cssClass.getPresentableText();
-        // 不处理任何其他情况， 仅仅处理 . 和 & 开头的选择器
-        if (!name.startsWith(DOT) && !name.startsWith(CONNECT_FLAG)) return null;
-        if (name.startsWith(":global")) return null;
-        if (name.startsWith(DOT)) {
-            CssRuleset father = QCssModulesUtil.findPreFatherRuleSet(cssClass);
-            LinkedList<String> fatherName = QCssModulesUtil.getCssRuleSetAllNameWithDot(father);
-            if (fatherName.size() == 1 && fatherName.getFirst().startsWith(":global")) return null;
-            return name;
-        }
-
-        name = name.replaceFirst(CONNECT_FLAG, "");
-
-        while (true) {
-            CssRuleset father = QCssModulesUtil.findPreFatherRuleSet(cssClass);
-            if (father instanceof CssStylesheet) break;
-            LinkedList<String> fatherName = QCssModulesUtil.getCssRuleSetAllNameWithDot(father);
-
-            final String cssSelectorName = fatherName.getFirst();
-            if (cssSelectorName.startsWith(DOT)) {
-                // ｜  .app{} ｜ .app .demo{} ｜  .app, .demo{} ｜  三种情况
-                if (fatherName.size() == 1) {
-                    if (!cssSelectorName.contains(SPACE))
-                        // .app{}
-                        return fatherName.getFirst() + name;
-                    else {
-                        // .app .xyz{}
-                        String[] names = cssSelectorName.split(SPACE);
-                        return names[names.length - 1] + name;
-                    }
-                }
-                // .app , .xyz
-                StringBuilder ans = new StringBuilder();
-                for (String f : fatherName) {
-                    ans.append(f).append(name).append(",");
-                }
-                return ans.substring(0, ans.length() - 1);
-            } else {
-                cssClass = father;
-                name = fatherName.getLast() + name;
-                name = name.replaceFirst(CONNECT_FLAG, "");
-            }
-        }
-
-        return name;
-    }
-
-    /**
-     * 代码预处理, 获取所有的类名, 以及类名对应的 PsiElement, 方便做代码跳转
-     */
-    public static void preLoad(@NotNull StylesheetFile stylesheetFile) {
-        psiElementRefHashMap.clear();
-        alreadyProcess.clear();
-        for (CssRuleset cssClass : PsiTreeUtil.findChildrenOfType(stylesheetFile, CssRuleset.class)) {
-            try {
-                if (isInTheGlobal(cssClass)) continue;
-                String cssName = parseClass(cssClass);
-                if (cssName == null) continue;
-                if (cssName.contains(SPACE) || cssName.contains(COMMA)) {
-                    processMultiSelector(cssName, alreadyProcess, cssClass);
-                    continue;
-                }
-                alreadyProcess.add(StringUtil.trim(cssName));
-                QCssModulesUtil.psiElementRefHashMap.put(cssName, cssClass.getSelectors());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-
-        }
     }
 
     /**

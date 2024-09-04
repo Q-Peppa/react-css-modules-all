@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>react.css.module.all</id>
     <name>react.css.module.all</name>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <vendor>Peppa</vendor>
     <description><![CDATA[
      <p>react-css-module-all</p>
@@ -15,12 +15,16 @@
      <h2>NOT SUPPORT</h2>
      <ul>
         <li>hover show style content</li>
-        <li>remove :global selector</li>
         <li>.fooBar auto transform ['foo-bar']</li>
+        <li>复杂的选择器判断</li>
      </ul>
     ]]></description>
 
     <change-notes><![CDATA[
+         <h2>0.0.3</h2>
+          <ul>
+            <li>支持了较为复杂的 parents selector 情况</li>
+          </ul>
         <h2>0.0.2</h2>
         <h3>New Feature</h3>
         <ul>
@@ -35,6 +39,7 @@
     <depends>JavaScript</depends>
     <depends>NodeJS</depends>
     <depends>com.intellij.css</depends>
+
 
 
 

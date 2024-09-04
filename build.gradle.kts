@@ -1,8 +1,11 @@
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+
 plugins {
     id("java") // Java support
     alias(libs.plugins.kotlin) // Kotlin support
     alias(libs.plugins.intelliJPlatform) // IntelliJ Platform Gradle Plugin
 }
+
 
 repositories {
     maven { setUrl("https://maven.aliyun.com/repository/central") }
@@ -22,10 +25,12 @@ repositories {
 }
 
 dependencies {
+    testImplementation(libs.junit)
+
     intellijPlatform {
         webstorm("2024.2")
         bundledPlugin("JavaScript")
         instrumentationTools()
+        testFramework(TestFrameworkType.Platform)
     }
 }
-

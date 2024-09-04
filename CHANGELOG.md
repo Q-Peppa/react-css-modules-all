@@ -1,5 +1,10 @@
 # react-css-modules-all
 
+## [0.0.2] - 2024-09-04
+
+## New Feature 
+
+1. 支持了复杂一点的parents selector
 
 ## [0.0.2] - 2024-09-03
 
