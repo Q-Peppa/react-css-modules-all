@@ -1,21 +1,13 @@
 # react-css-modules-all
 
-## [0.0.2] - 2024-09-04
+## [0.0.3] - 2024-09-04
 
-## New Feature 
+### New Feature 
 
+### Changed zh_CN
 1. 支持了复杂一点的parents selector
+2. 支持了选择器含有伪类的情况
 
-## [0.0.2] - 2024-09-03
-
-## Added
-- 支持逗号分隔的选择器
-- 简单支持&模式
-- 支持跳转到 style 内部
-
-
-## [0.0.1] - 2024-09-01
-
-### Added
-
-- 支持scss 父选择器 & 提示 + 跳转
+### Changed en_US
+1. support a little complex parents selector
+2. support css selector has pseudo 

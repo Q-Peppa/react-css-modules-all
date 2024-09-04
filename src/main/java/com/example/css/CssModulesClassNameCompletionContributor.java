@@ -8,8 +8,8 @@ import com.intellij.lang.javascript.psi.JSLiteralExpression;
 import com.intellij.patterns.*;
 import com.intellij.psi.*;
 import com.intellij.psi.css.*;
-import com.intellij.psi.css.impl.CssSelectorImpl;
-import com.intellij.psi.css.impl.CssSelectorListImpl;
+import fleet.org.jetbrains.plugins.scss.psi.SassScssFileElementType;
+
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 
 final class CssModulesClassNameCompletionContributor extends CompletionContributor {
@@ -84,6 +85,11 @@ final class CssModulesClassNameCompletionContributor extends CompletionContribut
                 final String fileName = stylesheetFile.getName();
                 for (CssSimpleSelector simpleSelector : PsiTreeUtil.findChildrenOfType(stylesheetFile, CssSimpleSelector.class)) {
                     String text = StringUtils.trim(simpleSelector.getText());
+                    String pseudoClassText = QCssModulesUtil.getPseudoClassText(simpleSelector);
+                    if (!pseudoClassText.isEmpty() && text.replace(pseudoClassText, "").length() > 1) {
+                        String oriClassName = text.replace(pseudoClassText, "");
+                        if (oriClassName.isBlank() || oriClassName.length() <= 1) continue;
+                    }
                     if (!text.startsWith("&") || QCssModulesUtil.isInTheGlobal(simpleSelector)) continue;
                     /**
                      * &-foo 到 最顶层的全路径
@@ -92,7 +98,12 @@ final class CssModulesClassNameCompletionContributor extends CompletionContribut
 
                     PsiTreeUtil.findFirstParent(simpleSelector, parent -> {
                         if (parent instanceof CssRuleset) {
-                            path.add(((CssRuleset) parent).getPresentableText());
+                            final String innerName = ((CssRuleset) parent).getPresentableText();
+                            if (!QCssModulesUtil.getPseudoClassText(parent).isEmpty()) {
+                                path.add(innerName.replace(QCssModulesUtil.getPseudoClassText(parent), ""));
+                            } else {
+                                path.add(innerName);
+                            }
                             return ((CssRuleset) parent).getPresentableText().startsWith(".");
                         }
                         return false;
@@ -113,7 +124,13 @@ final class CssModulesClassNameCompletionContributor extends CompletionContribut
             private void addCompletions(@NotNull CompletionResultSet resultSet, @NotNull StylesheetFile stylesheetFile) {
                 QCssModulesUtil.initContainer(); // init all classname tracker
                 resolveNormalClassName(resultSet, stylesheetFile); // resolve startWith DOT class ,
+                final String fileType = stylesheetFile.getName();
+                Pattern cssFile = Pattern.compile("\\.css$", Pattern.CASE_INSENSITIVE);
+                if (cssFile.matcher(fileType).find()) {
+                    return;
+                }
                 resolveScssParentSelector(resultSet, stylesheetFile);
+
             }
         };
 

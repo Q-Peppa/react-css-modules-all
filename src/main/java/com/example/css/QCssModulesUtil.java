@@ -1,6 +1,7 @@
 
 package com.example.css;
 
+import Q.S.S;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ecmascript6.psi.ES6FromClause;
 import com.intellij.lang.ecmascript6.psi.ES6ImportedBinding;
@@ -46,10 +47,11 @@ public class QCssModulesUtil {
     public static final HashSet<String> alreadyProcess = new HashSet<>();
 
 
-    public static void initContainer(){
+    public static void initContainer() {
         psiElementRefHashMap.clear();
         alreadyProcess.clear();
     }
+
     /**
      * PSI Pattern for matching string literals, e.g. the 'normal' in styles['normal']
      */
@@ -174,13 +176,20 @@ public class QCssModulesUtil {
 
     /**
      * 判断某一个类是否为 :global 的子级, 无论深度
+     *
      * @param element
      * @return
      */
-    public static boolean isInTheGlobal(PsiElement element){
+    public static boolean isInTheGlobal(PsiElement element) {
         CssRuleset parent = (CssRuleset) PsiTreeUtil.findFirstParent(element, e ->
                 e instanceof CssRuleset && ((CssRuleset) e).getPresentableText().contains(":global")
         );
         return parent != null;
+    }
+
+    //    cssPseudoClass
+    public static String getPseudoClassText(PsiElement element) {
+        CssPseudoClass cssPseudoClass = PsiTreeUtil.findChildOfAnyType(element, CssPseudoClass.class);
+        return cssPseudoClass != null ? cssPseudoClass.getText() : "";
     }
 }

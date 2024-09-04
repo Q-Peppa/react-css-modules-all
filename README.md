@@ -1,28 +1,32 @@
 # react-css-modules-all
 
-支持了scss的父选择器和跳转 
+simply support css module in react code completion
 
-idea by https://github.com/jimkyndemeyer/react-css-modules-intellij-plugin
+### Why Not Use WebStorm Based Function
 
+case it will be transformed css name case to camelCase
 
----
-
-```scss
-.app{
-    &-red{
-   }
-}
-```
-
-```tsx
-import  styles from "./index.module.less"
-
-//styles[""] => will popop  app , app-red
-```
+- https://youtrack.jetbrains.com/issue/WEB-38105/How-can-I-close-the-feature-about-Camel-case-support-for-CSS-Modules
+- https://youtrack.jetbrains.com/issue/WEB-41304/CSS-Modules-cant-navigate-to-class-with-a-hyphen
 
 
-## TODO
-1. 鼠标hover上, 应该可以预览样式code
-2. 如果通过 dot key访问, 自动转化为 JSLiteralExpression 的方式
-   3. `styles.fooBar -> styles['foo-bar']`;
-3. 添加测试样例
+### What's These Plugins Do? 
+
+1. parse css name but not transform case .
+2. support parents selector( & ) in scss file .
+3. support click classname link to css file.
+4. auto remove some classname in `:global` tag, because it's global style.
+
+
+### What's These Plugins Can't Do?
+
+1. Show document when mouse hover.
+2. parse very complex css selector.
+3. No enough test case
+
+
+### SnapShot
+
+![1.jpg](src%2Fmain%2Fresources%2Fpic%2F1.jpg)
+![2.jpg](src%2Fmain%2Fresources%2Fpic%2F2.jpg)
+![3.jpg](src%2Fmain%2Fresources%2Fpic%2F3.jpg)
