@@ -24,6 +24,12 @@ repositories {
     gradlePluginPortal()
 }
 
+
+// Set the JVM language level used to build the project.
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
     testImplementation(libs.junit)
 
