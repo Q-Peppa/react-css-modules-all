@@ -10,6 +10,7 @@ import com.intellij.lang.javascript.psi.JSLiteralExpression;
 import com.intellij.patterns.*;
 import com.intellij.psi.*;
 import com.intellij.psi.css.*;
+import com.intellij.psi.css.impl.CssSimpleSelectorImpl;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +82,7 @@ final class CssModulesClassNameCompletionContributor extends CompletionContribut
                 if (stylesheetFile.getParent() == null) return;
                 final String folderName = stylesheetFile.getParent().getName();
                 final String fileName = stylesheetFile.getName();
-                for (CssSimpleSelector simpleSelector : PsiTreeUtil.findChildrenOfType(stylesheetFile, CssSimpleSelector.class)) {
+                for (CssSimpleSelectorImpl simpleSelector : PsiTreeUtil.findChildrenOfType(stylesheetFile, CssSimpleSelectorImpl.class)) {
                     String text = StringUtils.trim(simpleSelector.getPresentableText());
                     if (text.length() <= 1) continue;  //  "????"
                     if (!text.startsWith("&") || QCssModulesUtil.isInTheGlobal(simpleSelector)) continue;
