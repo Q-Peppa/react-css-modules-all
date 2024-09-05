@@ -37,9 +37,6 @@ repositories {
 
 dependencies {
     testImplementation(libs.junit)
-    implementation("org.jetbrains:scss-parser:0.3.171")
-
-
     intellijPlatform {
         webstorm("2024.2")
         bundledPlugin("JavaScript")

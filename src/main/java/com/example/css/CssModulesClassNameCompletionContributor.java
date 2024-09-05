@@ -8,7 +8,6 @@ import com.intellij.lang.javascript.psi.JSLiteralExpression;
 import com.intellij.patterns.*;
 import com.intellij.psi.*;
 import com.intellij.psi.css.*;
-import fleet.org.jetbrains.plugins.scss.psi.SassScssFileElementType;
 
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
@@ -110,7 +109,8 @@ final class CssModulesClassNameCompletionContributor extends CompletionContribut
                     });
                     CssSelector selectors = (CssSelector) simpleSelector.getParent();
                     // 倒转css class 的顺序
-                    ArrayList<String> cssList = QScssUtil.getOriginCss(path.reversed());
+                    Collections.reverse(path);
+                    ArrayList<String> cssList = QScssUtil.getOriginCss(path);
                     final String desc = " (" + folderName + "/" + fileName + ":" + selectors.getLineNumber() + ")_by_css_module_all";
                     for (String name : cssList) {
                         QCssModulesUtil.psiElementRefHashMap.put(name, new CssSelector[]{selectors});

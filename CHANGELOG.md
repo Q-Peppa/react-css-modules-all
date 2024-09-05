@@ -1,5 +1,11 @@
 # react-css-modules-all
 
+## [0.0.4] - 2024-09-04
+
+### New Feature
+
+1. fix java compatibility problems
+
 ## [0.0.3] - 2024-09-04
 
 ### New Feature 

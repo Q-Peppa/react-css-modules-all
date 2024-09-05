@@ -23,7 +23,7 @@ public class QScssUtil {
     public static String traverse(String head, List<String> list, int pos) {
         head = head.trim();
         if (head.contains(" ")) {
-            head = Arrays.asList(head.split(" ")).getLast();
+            head = head.split(SPACE)[head.split(SPACE).length-1];
         }
         if (pos >= list.size()) {
             realName.add(head);
@@ -32,7 +32,7 @@ public class QScssUtil {
         final String now = list.get(pos);
         StringBuilder newHead = new StringBuilder(now);
         if (!now.contains(",")) {
-            String sb = Arrays.asList(now.split(SPACE)).getLast();
+            String sb = now.split(SPACE)[now.split(SPACE).length - 1];
             sb = sb.replaceFirst(CONNECT_FLAG, head);
             for (String inner : now.split(SPACE)) {
                 restCssNameSet.add(inner.replace(CONNECT_FLAG, head));
@@ -60,12 +60,12 @@ public class QScssUtil {
 
     public static ArrayList<String> getOriginCss(List<String> list) {
         init();
-        String head = list.getFirst();
-        String[] strings = head.split(",");
-        if (head.contains(" ") && !head.contains(",")) {
-            String sb = Arrays.asList(head.split(" ")).getLast();
-            for (String inner : head.split(" ")) {
-                restCssNameSet.add(inner.replace("&", head));
+        String head = list.get(0);
+        String[] strings = head.split(COMMA);
+        if (head.contains(SPACE) && !head.contains(COMMA)) {
+            String sb = head.split(SPACE)[head.split(SPACE).length - 1];
+            for (String inner : head.split(SPACE)) {
+                restCssNameSet.add(inner.replace(CONNECT_FLAG, head));
             }
             traverse(sb, list, 1);
 
@@ -74,8 +74,7 @@ public class QScssUtil {
                 traverse(string, list, 1);
             }
         }
-        return (ArrayList<String>) realName.clone();
-
+        return realName;
     }
 
 }

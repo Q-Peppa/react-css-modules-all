@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>react.css.module.all</id>
     <name>react.css.module.all</name>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
     <vendor>Peppa</vendor>
     <description><![CDATA[
      <p>react-css-module-all</p>
@@ -21,6 +21,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h2>0.0.4</h2>
+            <ul>
+                <li>1. fix java compatibility problems</li>
+            </ul>
          <h2>0.0.3</h2>
           <ul>
             <li>支持了较为复杂的 parents selector 情况</li>
