@@ -16,13 +16,11 @@ public class QScssUtil {
      */
     private static final String CONNECT_FLAG = "&";
 
-    private static final HashSet<String> restCssNameSet = new HashSet<>();
-    private static final HashSet<String> set = new HashSet<>();
     private static final ArrayList<String> realName = new ArrayList<>();
 
     public static String traverse(String head, List<String> list, int pos) {
         head = head.trim();
-        if (head.contains(" ")) {
+        if (head.contains(SPACE)) {
             head = head.split(SPACE)[head.split(SPACE).length-1];
         }
         if (pos >= list.size()) {
@@ -34,27 +32,18 @@ public class QScssUtil {
         if (!now.contains(",")) {
             String sb = now.split(SPACE)[now.split(SPACE).length - 1];
             sb = sb.replaceFirst(CONNECT_FLAG, head);
-            for (String inner : now.split(SPACE)) {
-                restCssNameSet.add(inner.replace(CONNECT_FLAG, head));
-            }
             sb += (traverse(sb, list, pos + 1));
             return sb;
         }
 
         for (String string : newHead.toString().split(COMMA)) {
             string = string.trim();
-            if (string.startsWith(DOT)) set.add(string);
-            if (string.startsWith(CONNECT_FLAG)) {
-                set.add(string.replaceFirst(CONNECT_FLAG, head));
-            }
             traverse(string.replaceAll(CONNECT_FLAG, head), list, pos + 1);
         }
         return newHead.toString();
     }
 
     private static void init() {
-        restCssNameSet.clear();
-        set.clear();
         realName.clear();
     }
 
@@ -64,9 +53,6 @@ public class QScssUtil {
         String[] strings = head.split(COMMA);
         if (head.contains(SPACE) && !head.contains(COMMA)) {
             String sb = head.split(SPACE)[head.split(SPACE).length - 1];
-            for (String inner : head.split(SPACE)) {
-                restCssNameSet.add(inner.replace(CONNECT_FLAG, head));
-            }
             traverse(sb, list, 1);
 
         } else {

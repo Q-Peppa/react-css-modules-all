@@ -1,5 +1,13 @@
 # react-css-modules-all
 
+## [0.0.5] - 2024-09-05
+
+### New Feature
+1. add some test case
+2. remove unused import
+3. support selector has SPACE
+
+
 ## [0.0.4] - 2024-09-04
 
 ### New Feature

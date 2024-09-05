@@ -80,7 +80,7 @@ public class QCssModulesUtil {
      */
     public static CssSelector getCssClass(StylesheetFile stylesheetFile, String cssClass) {
         if (psiElementRefHashMap.containsKey(cssClass)) return psiElementRefHashMap.get(cssClass)[0];
-        return PsiTreeUtil.getChildOfType(stylesheetFile, CssSelector.class);
+        return PsiTreeUtil.findChildOfType(stylesheetFile, CssSelector.class);
     }
 
 
@@ -94,7 +94,6 @@ public class QCssModulesUtil {
     public static PsiElement getCssClassNamesImportOrRequireDeclaration(JSLiteralExpression classNameLiteral) {
         final JSIndexedPropertyAccessExpression expression = PsiTreeUtil.getParentOfType(classNameLiteral, JSIndexedPropertyAccessExpression.class);
         if (expression != null) {
-            // string literal is part of "var['string literal']", e.g. "styles['normal']"
             if (expression.getQualifier() != null) {
                 final PsiReference psiReference = expression.getQualifier().getReference();
                 if (psiReference != null) {

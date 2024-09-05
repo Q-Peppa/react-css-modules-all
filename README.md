@@ -30,3 +30,8 @@ case it will be transformed css name case to camelCase
 ![1.jpg](src%2Fmain%2Fresources%2Fpic%2F1.jpg)
 ![2.jpg](src%2Fmain%2Fresources%2Fpic%2F2.jpg)
 ![3.jpg](src%2Fmain%2Fresources%2Fpic%2F3.jpg)
+
+
+### Statement
+
+This plugin not guaranteed all function work 

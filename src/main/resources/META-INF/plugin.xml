@@ -6,21 +6,21 @@
     <vendor>Peppa</vendor>
     <description><![CDATA[
      <p>react-css-module-all</p>
-     <h4>support father selector in scss file</h4>
+     <h4>support css module in project and not transform css case to camelCase</h4>
      <ul>
-         <li>auto detected css module classname add completion</li>
+         <li>auto detected css module class name add completion</li>
          <li>enable support & in scss file</li>
          <li>find reference support</li>
-     </ul>
-     <h2>NOT SUPPORT</h2>
-     <ul>
-        <li>hover show style content</li>
-        <li>.fooBar auto transform ['foo-bar']</li>
-        <li>复杂的选择器判断</li>
      </ul>
     ]]></description>
 
     <change-notes><![CDATA[
+        <h2>0.0.5</h2>
+        <ul>
+            <li>1. add some test case</li>
+            <li>2. remove unused import</li>
+            <li>3. support selector has SPACE</li>
+        </ul>
         <h2>0.0.4</h2>
             <ul>
                 <li>1. fix java compatibility problems</li>
@@ -44,11 +44,6 @@
     <depends>JavaScript</depends>
     <depends>NodeJS</depends>
     <depends>com.intellij.css</depends>
-
-
-
-    <resource-bundle>messages.MyBundle</resource-bundle>
-
 
     <extensions defaultExtensionNs="com.intellij">
         <psi.referenceContributor implementation="com.example.css.CssModulesIndexedStylesVarPsiReferenceContributor" />

@@ -1,20 +1,20 @@
 package com.example.css;
 
 import com.intellij.codeInsight.completion.*;
+
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+
 import com.intellij.icons.AllIcons;
 import com.intellij.lang.javascript.psi.JSLiteralExpression;
 import com.intellij.patterns.*;
 import com.intellij.psi.*;
 import com.intellij.psi.css.*;
-
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -108,8 +108,9 @@ final class CssModulesClassNameCompletionContributor extends CompletionContribut
                         return false;
                     });
                     CssSelector selectors = (CssSelector) simpleSelector.getParent();
-                    // 倒转css class 的顺序
-                    Collections.reverse(path);
+
+                    path.set(0 , text); // 收集数据的起始一定是一个 & 开头的选择器
+                    Collections.reverse(path); // 收集的时候是从下往上, 所以这里应该翻转一下顺序
                     ArrayList<String> cssList = QScssUtil.getOriginCss(path);
                     final String desc = " (" + folderName + "/" + fileName + ":" + selectors.getLineNumber() + ")_by_css_module_all";
                     for (String name : cssList) {
