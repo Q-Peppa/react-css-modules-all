@@ -34,4 +34,8 @@ case it will be transformed css name case to camelCase
 
 ### Statement
 
-This plugin not guaranteed all function work 
+This plugin not guaranteed all function work
+
+### Already Issue
+
+1. complex selector
