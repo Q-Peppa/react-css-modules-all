@@ -2,6 +2,10 @@
 
 简单支持了 react 项目中的 scss 和 css module 的使用
 
+### 安装插件
+
+插件主页 https://plugins.jetbrains.com/plugin/25233-react-css-module-all/versions/stable/599113
+
 ### 为什么不使用WebStorm自带的功能
 
 因为自带的功能会自动把 hyphen case 转为 camelCase , 参考下面的链接 : 
@@ -33,3 +37,7 @@
 
 ### 声明
 这个插件可能会不好使
+
+### 已知问题
+
+1. 无法解决复杂的选择器

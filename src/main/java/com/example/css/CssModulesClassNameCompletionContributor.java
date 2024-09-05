@@ -63,9 +63,8 @@ final class CssModulesClassNameCompletionContributor extends CompletionContribut
                     if (QCssModulesUtil.isInTheGlobal(aClass)) continue;
                     String name = aClass.getText();
 
-                    if (QCssModulesUtil.alreadyProcess.contains(name)) continue;
+                    if (QCssModulesUtil.psiElementRefHashMap.containsKey(name)) continue;
 
-                    QCssModulesUtil.alreadyProcess.add(name);
                     CssRuleset ruleset = aClass.getRuleset();
                     if (ruleset != null) {
                         CssSelector[] selectors = ruleset.getSelectors();
@@ -83,26 +82,16 @@ final class CssModulesClassNameCompletionContributor extends CompletionContribut
                 final String folderName = stylesheetFile.getParent().getName();
                 final String fileName = stylesheetFile.getName();
                 for (CssSimpleSelector simpleSelector : PsiTreeUtil.findChildrenOfType(stylesheetFile, CssSimpleSelector.class)) {
-                    String text = StringUtils.trim(simpleSelector.getText());
-                    String pseudoClassText = QCssModulesUtil.getPseudoClassText(simpleSelector);
-                    if (!pseudoClassText.isEmpty() && text.replace(pseudoClassText, "").length() > 1) {
-                        String oriClassName = text.replace(pseudoClassText, "");
-                        if (oriClassName.isBlank() || oriClassName.length() <= 1) continue;
-                    }
+                    String text = StringUtils.trim(simpleSelector.getPresentableText());
+                    if (text.length() <= 1) continue;  //  "????"
                     if (!text.startsWith("&") || QCssModulesUtil.isInTheGlobal(simpleSelector)) continue;
-                    /**
-                     * &-foo 到 最顶层的全路径
-                     */
-                    final ArrayList<String> path = new ArrayList<>();
 
+                    // &-foo 到 最顶层的全路径
+                    final ArrayList<String> path = new ArrayList<>();
                     PsiTreeUtil.findFirstParent(simpleSelector, parent -> {
                         if (parent instanceof CssRuleset) {
-                            final String innerName = ((CssRuleset) parent).getPresentableText();
-                            if (!QCssModulesUtil.getPseudoClassText(parent).isEmpty()) {
-                                path.add(innerName.replace(QCssModulesUtil.getPseudoClassText(parent), ""));
-                            } else {
-                                path.add(innerName);
-                            }
+                            final String cellName = StringUtils.trim(((CssRuleset) parent).getPresentableText());
+                            path.add(cellName);
                             return ((CssRuleset) parent).getPresentableText().startsWith(".");
                         }
                         return false;
@@ -114,7 +103,14 @@ final class CssModulesClassNameCompletionContributor extends CompletionContribut
                     ArrayList<String> cssList = QScssUtil.getOriginCss(path);
                     final String desc = " (" + folderName + "/" + fileName + ":" + selectors.getLineNumber() + ")_by_css_module_all";
                     for (String name : cssList) {
+                        if(String.valueOf(name).contains(":")){
+                            name = QCssModulesUtil.StringRemoveFrom(name, name.indexOf(":"));  // 移除掉生成好的伪元素 or 伪类
+                        }
+                        if (QCssModulesUtil.psiElementRefHashMap.containsKey(name)) {
+                            continue;
+                        }
                         QCssModulesUtil.psiElementRefHashMap.put(name, new CssSelector[]{selectors});
+
                         final String cssName = StringUtils.trim(name.replaceFirst(".", ""));
                         resultSet.addElement(buildLookupElement(cssName, desc, selectors));
                     }

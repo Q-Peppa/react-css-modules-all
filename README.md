@@ -2,6 +2,10 @@
 
 simply support css module in react code completion
 
+### Install Plugin
+
+Plugin Home (https://plugins.jetbrains.com/plugin/25233-react-css-module-all/versions/stable/599113)
+
 ### Why Not Use WebStorm Based Function
 
 case it will be transformed css name case to camelCase
@@ -34,4 +38,8 @@ case it will be transformed css name case to camelCase
 
 ### Statement
 
-This plugin not guaranteed all function work 
+This plugin not guaranteed all function work
+
+### Already Issue
+
+1. complex selector

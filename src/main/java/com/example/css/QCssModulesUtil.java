@@ -1,7 +1,6 @@
 
 package com.example.css;
 
-import Q.S.S;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ecmascript6.psi.ES6FromClause;
 import com.intellij.lang.ecmascript6.psi.ES6ImportedBinding;
@@ -11,7 +10,6 @@ import com.intellij.lang.javascript.psi.JSIndexedPropertyAccessExpression;
 import com.intellij.lang.javascript.psi.JSLiteralExpression;
 import com.intellij.lang.javascript.psi.JSVariable;
 import com.intellij.openapi.util.Ref;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.patterns.PsiElementPattern;
 import com.intellij.psi.PsiElement;
@@ -21,7 +19,7 @@ import com.intellij.psi.css.*;
 import com.intellij.psi.filters.ElementFilter;
 import com.intellij.psi.filters.position.FilterPattern;
 import com.intellij.psi.util.PsiTreeUtil;
-import org.jetbrains.annotations.NotNull;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -41,15 +39,14 @@ public class QCssModulesUtil {
     private static final String CONNECT_FLAG = "&";
 
     /**
-     * @description 保存了 classname 和 CssSelector[] 的对应关系
+     * 保存了 classname 和 CssSelector[] 的对应关系
+     * @example   .foo -> [CssSelector , CssSelector, ...]
      */
     public static final HashMap<String, CssSelector[]> psiElementRefHashMap = new HashMap<>();
-    public static final HashSet<String> alreadyProcess = new HashSet<>();
 
 
     public static void initContainer() {
         psiElementRefHashMap.clear();
-        alreadyProcess.clear();
     }
 
     /**
@@ -175,9 +172,7 @@ public class QCssModulesUtil {
 
     /**
      * 判断某一个类是否为 :global 的子级, 无论深度
-     *
-     * @param element
-     * @return
+     * @return boolean
      */
     public static boolean isInTheGlobal(PsiElement element) {
         CssRuleset parent = (CssRuleset) PsiTreeUtil.findFirstParent(element, e ->
@@ -186,9 +181,20 @@ public class QCssModulesUtil {
         return parent != null;
     }
 
-    //    cssPseudoClass
-    public static String getPseudoClassText(PsiElement element) {
-        CssPseudoClass cssPseudoClass = PsiTreeUtil.findChildOfAnyType(element, CssPseudoClass.class);
-        return cssPseudoClass != null ? cssPseudoClass.getText() : "";
-    }
+
+    /**
+     * remove all char from index to end
+     * @param origin origin String
+     * @param index remove begin index
+     * @return String
+     */
+    public static String StringRemoveFrom(String origin , int index){
+        if (StringUtils.trim(origin).isBlank()) return origin;
+        StringBuilder ans = new StringBuilder();
+        var ori = origin.toCharArray();
+        for (int i= 0; i < Math.min(Math.max(index , 0 ) , ori.length) ; i++){
+            ans.append(ori[i]);
+        }
+        return String.valueOf(ans.toString());
+    };
 }
