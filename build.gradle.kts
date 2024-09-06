@@ -36,6 +36,7 @@ repositories {
 
 
 dependencies {
+    implementation("org.opentest4j:opentest4j:1.3.0")
     testImplementation(libs.junit)
     intellijPlatform {
         webstorm("2024.2")

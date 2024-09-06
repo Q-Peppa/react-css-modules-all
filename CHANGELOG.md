@@ -1,5 +1,11 @@
 # react-css-modules-all
 
+## [0.0.6] - 2024-09-06
+
+### New Feature
+
+1. remove all pseudo class / element
+
 ## [0.0.5] - 2024-09-05
 
 ### New Feature
