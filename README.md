@@ -43,3 +43,4 @@ This plugin not guaranteed all function work
 ### Already Issue
 
 1. complex selector
+2. Pseudo class / elemment Selector
