@@ -12,22 +12,28 @@ import com.intellij.psi.*;
 import com.intellij.psi.css.*;
 import com.intellij.psi.css.impl.CssSimpleSelectorImpl;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.ArrayUtil;
 import com.intellij.util.ProcessingContext;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.*;
 import java.util.regex.Pattern;
 
 
+
 final class CssModulesClassNameCompletionContributor extends CompletionContributor {
 
+
+    private  final static String ProjectName = QCssMessage.message("projectName");
 
     private static LookupElement buildLookupElement(
             @NotNull String name,
             @NotNull String desc,
             @Nullable PsiElement psiElement
     ) {
+//        QCssMessage.
         LookupElementBuilder builder = LookupElementBuilder.create(name).withTailText(desc).withIcon(AllIcons.Xml.Css_class).bold().withCaseSensitivity(true);
         if (psiElement != null) {
             builder = builder.withPsiElement(psiElement);
@@ -69,7 +75,7 @@ final class CssModulesClassNameCompletionContributor extends CompletionContribut
                     CssRuleset ruleset = aClass.getRuleset();
                     if (ruleset != null) {
                         CssSelector[] selectors = ruleset.getSelectors();
-                        final String desc = " (" + folderName + "/" + fileName + ":" + selectors[0].getLineNumber() + ")_by_css_module_all";
+                        final String desc = " (" + folderName + "/" + fileName + ":" + selectors[0].getLineNumber() + ")_by_" + ProjectName;
                         QCssModulesUtil.psiElementRefHashMap.put(name, selectors);
                         final String cssName = StringUtils.trim(name.replaceFirst(".", ""));
                         resultSet.addElement(buildLookupElement(cssName, desc, selectors[0]));
@@ -102,10 +108,10 @@ final class CssModulesClassNameCompletionContributor extends CompletionContribut
                     path.set(0 , text); // 收集数据的起始一定是一个 & 开头的选择器
                     Collections.reverse(path); // 收集的时候是从下往上, 所以这里应该翻转一下顺序
                     ArrayList<String> cssList = QScssUtil.getOriginCss(path);
-                    final String desc = " (" + folderName + "/" + fileName + ":" + selectors.getLineNumber() + ")_by_css_module_all";
+                    final String desc = " (" + folderName + "/" + fileName + ":" + selectors.getLineNumber() + ")_by_" + ProjectName;
                     for (String name : cssList) {
                         if(String.valueOf(name).contains(":")){
-                            name = QCssModulesUtil.StringRemoveFrom(name, name.indexOf(":"));  // 移除掉生成好的伪元素 or 伪类
+                            name = ArrayUtil.getLastElement(name.split(":")); // 移除掉生成好的伪元素 or 伪类
                         }
                         if (QCssModulesUtil.psiElementRefHashMap.containsKey(name)) {
                             continue;

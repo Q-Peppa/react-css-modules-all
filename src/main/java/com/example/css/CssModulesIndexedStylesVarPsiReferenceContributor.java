@@ -18,7 +18,7 @@ import java.util.Optional;
  * If not Founded  , will point the First CssClassSelector in stylesheet
  */
 public class CssModulesIndexedStylesVarPsiReferenceContributor extends PsiReferenceContributor {
-
+    private static final String DOT = ".";
     @Override
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
         registrar.registerReferenceProvider(QCssModulesUtil.STRING_PATTERN, new PsiReferenceProvider() {
@@ -27,7 +27,7 @@ public class CssModulesIndexedStylesVarPsiReferenceContributor extends PsiRefere
             public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element, @NotNull ProcessingContext context) {
                 final PsiElement cssClassNamesImportOrRequire = QCssModulesUtil.getCssClassNamesImportOrRequireDeclaration((JSLiteralExpression) element);
                 if (cssClassNamesImportOrRequire != null) {
-                    final String literalClass = "." + StringUtils.stripStart(StringUtils.stripEnd(element.getText(), "\"'"), "\"'");
+                    final String literalClass = DOT + StringUtils.stripStart(StringUtils.stripEnd(element.getText(), "\"'"), "\"'");
                     final Ref<StylesheetFile> referencedStyleSheet = new Ref<>();
                     final PsiElement psiElement = QCssModulesUtil.getCssClass(cssClassNamesImportOrRequire, literalClass, referencedStyleSheet);
                     if (psiElement != null) {

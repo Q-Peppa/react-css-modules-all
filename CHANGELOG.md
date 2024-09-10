@@ -1,5 +1,12 @@
 # react-css-modules-all
 
+## [0.0.7] - 2024-09-10
+
+### New Feature 
+
+1. support selector with tag
+2. use intellij function deal with String and Container
+
 ## [0.0.6] - 2024-09-06
 
 ### New Feature

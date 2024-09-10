@@ -32,4 +32,11 @@ public class CssParserUtilsTest {
         testCase(List.of(".foo .bar" ,"&-inner") , List.of(".bar-inner"));
         testCase(List.of(".foo .bar .space" ,"&-inner") , List.of(".space-inner"));
     }
+
+
+    @Test
+    public void testTagSelectorText(){
+        testCase(List.of("div.app" ,"&-inner") , List.of(".app-inner"));
+        testCase(List.of("div.app,.foo" ,"&-inner") , List.of(".app-inner", ".foo-inner"));
+    }
 }

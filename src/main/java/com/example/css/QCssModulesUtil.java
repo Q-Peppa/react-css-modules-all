@@ -30,14 +30,6 @@ import java.util.*;
  */
 public class QCssModulesUtil {
 
-    private static final String COMMA = ",";
-    private static final String DOT = ".";
-    private static final String SPACE = " ";
-    /**
-     * 需要连接父亲的名字
-     */
-    private static final String CONNECT_FLAG = "&";
-
     /**
      * 保存了 classname 和 CssSelector[] 的对应关系
      * @example   .foo -> [CssSelector , CssSelector, ...]
@@ -181,20 +173,4 @@ public class QCssModulesUtil {
         return parent != null;
     }
 
-
-    /**
-     * remove all char from index to end
-     * @param origin origin String
-     * @param index remove begin index
-     * @return String
-     */
-    public static String StringRemoveFrom(String origin , int index){
-        if (StringUtils.trim(origin).isBlank()) return origin;
-        StringBuilder ans = new StringBuilder();
-        var ori = origin.toCharArray();
-        for (int i= 0; i < Math.min(Math.max(index , 0 ) , ori.length) ; i++){
-            ans.append(ori[i]);
-        }
-        return String.valueOf(ans.toString());
-    };
 }
