@@ -20,6 +20,7 @@ import com.intellij.psi.filters.ElementFilter;
 import com.intellij.psi.filters.position.FilterPattern;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -68,6 +69,9 @@ public class QCssModulesUtil {
      * @return the matching class or <code>null</code> if no matches are found
      */
     public static CssSelector getCssClass(StylesheetFile stylesheetFile, String cssClass) {
+        if (psiElementRefHashMap.isEmpty()) {
+            CssModulesClassNameCompletionContributor.completionHelper(null , stylesheetFile);
+        }
         if (psiElementRefHashMap.containsKey(cssClass)) return psiElementRefHashMap.get(cssClass)[0];
         return PsiTreeUtil.findChildOfType(stylesheetFile, CssSelector.class);
     }
@@ -109,7 +113,7 @@ public class QCssModulesUtil {
         final Ref<StylesheetFile> stylesheetFileRef = new Ref<>();
         cssFileNameLiteralParent.accept(new PsiRecursiveElementVisitor() {
             @Override
-            public void visitElement(PsiElement element) {
+            public void visitElement(@NotNull PsiElement element) {
                 if (stylesheetFileRef.get() != null) {
                     return;
                 }
@@ -147,7 +151,7 @@ public class QCssModulesUtil {
     /**
      * Gets the style sheet, if any, that the specified element resolves to
      *
-     * @param element           element used to resolve
+     * @param element   element used to resolve
      * @param stylesheetFileRef the ref to set the resolved sheet on
      * @return true if the element resolves to a style sheet file, false otherwise
      */

@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>react.css.module.all</id>
     <name>React Css Modules All</name>
-    <version>0.0.7</version>
+    <version>0.0.8</version>
     <vendor>Peppa</vendor>
     <description><![CDATA[
      <p>react-css-module-all</p>
@@ -15,6 +15,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h2>0.0.8</h2>
+        <ul>
+            <li>support hover show documentation</li>
+            <li>support & selector with tag</li>
+        </ul>
         <h2>0.0.7</h2>
         <ul>
             <li>support selector with tag</li>
@@ -56,11 +61,28 @@
     <depends>NodeJS</depends>
     <depends>com.intellij.css</depends>
 
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>JavaScript</depends>
+    <depends>com.intellij.css</depends>
+
     <extensions defaultExtensionNs="com.intellij">
-        <psi.referenceContributor implementation="com.example.css.CssModulesIndexedStylesVarPsiReferenceContributor" />
-        <completion.contributor language="TypeScript JSX" implementationClass="com.example.css.CssModulesClassNameCompletionContributor" />
-        <completion.contributor language="JSX Harmony" implementationClass="com.example.css.CssModulesClassNameCompletionContributor" />
+        <psi.referenceContributor implementation="com.example.css.CssModulesIndexedStylesVarPsiReferenceContributor"/>
+        <completion.contributor language="ECMAScript 6"
+                                implementationClass="com.example.css.CssModulesClassNameCompletionContributor"/>
+
+        <completion.contributor language="TypeScript JSX"
+                                implementationClass="com.example.css.CssModulesClassNameCompletionContributor"/>
+
+        <lang.documentationProvider
+                implementationClass="com.example.document.SimpleDocumentationProvider"
+                language="TypeScript JSX"/>
+
+        <lang.documentationProvider
+                implementationClass="com.example.document.SimpleDocumentationProvider"
+                language="ECMAScript 6"/>
     </extensions>
+
 
 
 </idea-plugin>
