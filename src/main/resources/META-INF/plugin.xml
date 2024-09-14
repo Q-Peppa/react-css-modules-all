@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>react.css.module.all</id>
     <name>React Css Modules All</name>
-    <version>0.0.8</version>
+    <version>0.0.9</version>
     <vendor>Peppa</vendor>
     <description><![CDATA[
      <p>react-css-module-all</p>
@@ -15,6 +15,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h2>0.0.9</h2>
+        <ul>
+            <li> fix bug with Compatibility Verification  </li>
+        </ul>
         <h2>0.0.8</h2>
         <ul>
             <li>support hover show documentation</li>
@@ -59,11 +63,6 @@
     <depends>com.intellij.modules.lang</depends>
     <depends>JavaScript</depends>
     <depends>NodeJS</depends>
-    <depends>com.intellij.css</depends>
-
-    <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.modules.lang</depends>
-    <depends>JavaScript</depends>
     <depends>com.intellij.css</depends>
 
     <extensions defaultExtensionNs="com.intellij">

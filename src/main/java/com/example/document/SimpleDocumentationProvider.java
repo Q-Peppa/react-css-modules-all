@@ -3,6 +3,7 @@ package com.example.document;
 import com.intellij.lang.documentation.AbstractDocumentationProvider;
 import com.intellij.lang.documentation.DocumentationMarkup;
 import com.intellij.lang.javascript.psi.JSLiteralExpression;
+import com.intellij.openapi.util.text.HtmlChunk;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.css.CssDeclaration;
@@ -13,14 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SimpleDocumentationProvider extends AbstractDocumentationProvider {
-
-    public static void renderCssBlock(StringBuilder sb, CssDeclaration[] cssDeclarations) {
-        for (CssDeclaration declaration : cssDeclarations) {
-            if (declaration != null) {
-                sb.append(DocumentationMarkup.PRE_ELEMENT.addText(StringUtil.trim(declaration.getText())));
-            }
-        }
-    }
 
     @Override
     public @Nullable String generateDoc(PsiElement element, @Nullable PsiElement originalElement) {
@@ -34,7 +27,11 @@ public class SimpleDocumentationProvider extends AbstractDocumentationProvider {
             if (js.getReference() != null && js.getReference().resolve() instanceof CssSelector cssSelector) {
                 CssRuleset ruleset = cssSelector.getRuleset();
                 if (ruleset != null && ruleset.getBlock() != null) {
-                    renderCssBlock(content, ruleset.getBlock().getDeclarations());
+                    for (CssDeclaration declaration : ruleset.getBlock().getDeclarations()) {
+                        if (declaration != null) {
+                            content.append(HtmlChunk.tag("pre").addText(StringUtil.trim(declaration.getText())));
+                        }
+                    }
                 }
             }
             content.append(DocumentationMarkup.SECTION_END);

@@ -1,5 +1,9 @@
 # react-css-modules-all
 
+## [0.0.9] - 2024-09-14
+
+1. fix bug with Compatibility Verification
+
 ## [0.0.8] - 2024-09-14
 
 ### New Feature
