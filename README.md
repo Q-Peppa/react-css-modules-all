@@ -1,6 +1,6 @@
 # react-css-modules-all
 
-simply support css module in react code completion
+support css module in react code completion
 
 ### Install Plugin
 
@@ -21,12 +21,9 @@ case it will be transformed css name case to camelCase
 3. support click classname link to css file.
 4. auto remove some classname in `:global` tag, because it's global style.
 
-
 ### What's These Plugins Can't Do?
 
-1. Show document when mouse hover.
-2. parse very complex css selector.
-3. No enough test case
+1. No enough test case
 
 
 ### SnapShot
@@ -42,5 +39,4 @@ This plugin not guaranteed all function work
 
 ### Already Issue
 
-1. complex selector
-2. Pseudo class / elemment Selector
+There is no problem, welcome to submit an issue 
