@@ -1,5 +1,11 @@
 # react-css-modules-all
 
+## [0.0.8] - 2024-09-14
+
+### New Feature
+1. support hover show documentation
+2. support & selector with tag
+
 ## [0.0.7] - 2024-09-10
 
 ### New Feature 
