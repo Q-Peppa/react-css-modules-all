@@ -1,4 +1,4 @@
-package com.example.css;
+package com.example.ide.css;
 
 
 import com.intellij.util.containers.ContainerUtil;

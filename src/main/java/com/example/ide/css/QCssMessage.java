@@ -1,11 +1,11 @@
-package com.example.css;
+package com.example.ide.css;
 
 import com.intellij.DynamicBundle;
 import org.jetbrains.annotations.*;
 
 import java.util.function.Supplier;
 
-final class QCssMessage {
+public final class QCssMessage {
     @NonNls
     private static final String BUNDLE = "messages.MyBundle";
     private static final DynamicBundle INSTANCE =

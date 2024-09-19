@@ -1,15 +1,13 @@
-package com.example.css;
+package com.example.ide.psi;
+import com.example.ide.css.QCssModulesUtil;
 import com.intellij.lang.javascript.psi.JSLiteralExpression;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.css.*;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
 
 
 /**
@@ -21,6 +19,7 @@ public class CssModulesIndexedStylesVarPsiReferenceContributor extends PsiRefere
     private static final String DOT = ".";
     @Override
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
+        QCssModulesUtil.initContainer();
         registrar.registerReferenceProvider(QCssModulesUtil.STRING_PATTERN, new PsiReferenceProvider() {
             @NotNull
             @Override
@@ -32,6 +31,7 @@ public class CssModulesIndexedStylesVarPsiReferenceContributor extends PsiRefere
                     final PsiElement psiElement = QCssModulesUtil.getCssClass(cssClassNamesImportOrRequire, literalClass, referencedStyleSheet);
                     if (psiElement != null) {
                         return new PsiReference[]{new PsiReferenceBase<PsiElement>(element) {
+
                             @Override
                             public @NotNull PsiElement resolve() {
                                 return psiElement;
@@ -43,9 +43,14 @@ public class CssModulesIndexedStylesVarPsiReferenceContributor extends PsiRefere
                                 return new Object[0];
                             }
                         }};
+                    }else {
+                       if (referencedStyleSheet.get() != null) {
+                           final TextRange rangeInElement = TextRange.from(1, element.getTextLength() - 2); // minus string quotes
+                           return new PsiReference[]{new CssModulesUnknownClassPsiReference(element, rangeInElement, referencedStyleSheet.get())};
+                       }
                     }
                 }
-                return new PsiReference[0];
+                return PsiReference.EMPTY_ARRAY;
             }
         });
     }
