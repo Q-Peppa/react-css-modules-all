@@ -19,7 +19,10 @@ public class SimpleDocumentationProvider extends AbstractDocumentationProvider {
     public @Nullable String generateDoc(PsiElement element, @Nullable PsiElement originalElement) {
         StringBuilder content = new StringBuilder();
         content.append(DocumentationMarkup.DEFINITION_START);
-        if (originalElement != null && originalElement.getParent() instanceof JSLiteralExpression js) {
+        /**
+         * @issue fix https://github.com/Q-Peppa/react-css-modules-all/issues/1
+         */
+        if (element instanceof CssSelector && originalElement != null && originalElement.getParent() instanceof JSLiteralExpression js) {
             content.append(".").append(js.getStringValue());
             content.append(DocumentationMarkup.DEFINITION_END);
             content.append("<hr/>");
@@ -35,8 +38,9 @@ public class SimpleDocumentationProvider extends AbstractDocumentationProvider {
                 }
             }
             content.append(DocumentationMarkup.SECTION_END);
+            return String.valueOf(content);
         }
-        return String.valueOf(content);
+        return super.generateDoc(element  , originalElement);
     }
 
     @Override

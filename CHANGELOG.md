@@ -1,5 +1,10 @@
 # react-css-modules-all
 
+## [0.0.10] - 2024-09-19
+
+1. fix fetal error : TypeScript type miss
+2. add plugin icon
+
 ## [0.0.9] - 2024-09-14
 
 1. fix bug with Compatibility Verification

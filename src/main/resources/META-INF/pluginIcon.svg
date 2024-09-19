@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-stacking-context="true"
+     aria-owns="svg" width="40" height="40"
+     viewBox="72.5 0 40 40">
+    <style/>
+    <g data-stacking-layer="rootBackgroundAndBorders"/>
+    <g data-stacking-layer="childStackingContextsWithNegativeStackLevels"/>
+    <g data-stacking-layer="inFlowNonInlineNonPositionedDescendants"/>
+    <g data-stacking-layer="nonPositionedFloats"/>
+    <g data-stacking-layer="inFlowInlineLevelNonPositionedDescendants"/>
+    <g data-stacking-layer="childStackingContextsWithStackLevelZeroAndPositionedDescendantsWithStackLevelZero"/>
+    <g data-stacking-layer="childStackingContextsWithPositiveStackLevels"/>
+    <g data-tag="div" id="svg" class="w-[40px] h-[40px] bg-[#fff] p-[2px] " data-z-index="auto"
+       data-stacking-context="true" aria-owns="text-1xl1">
+        <g data-stacking-layer="rootBackgroundAndBorders">
+            <rect width="40" height="40" x="72.5" y="0" fill="rgb(255, 255, 255)"/>
+        </g>
+        <g data-tag="div" id="text-1xl1"
+           class="text-1xl  flex flex-col justify-end w-[28px] h-[28px] bg-[#fff]  p-1 border border-[.2px] text-[#000]  border-black"
+           data-z-index="auto" data-stacking-context="true" aria-owns="span1 div1 block1">
+            <g data-stacking-layer="rootBackgroundAndBorders">
+                <rect width="28" height="28" x="74.5" y="2" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)"
+                      stroke-width="0.2px"/>
+            </g>
+            <g data-tag="span" id="span1" data-z-index="auto" data-stacking-context="true">
+                <text color="rgb(0, 0, 0)" dominant-baseline="text-after-edge"
+                      font-family="ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;"
+                      font-size="6px" font-size-adjust="none" font-stretch="100%" font-style="normal"
+                      font-variant="normal" font-weight="400" direction="ltr" letter-spacing="normal"
+                      text-decoration="rgb(0, 0, 0)" text-anchor="start" text-rendering="auto" unicode-bidi="normal"
+                      word-spacing="0px" writing-mode="horizontal-tb" user-select="auto" fill="rgb(0, 0, 0)">
+                    <tspan xml:space="preserve" x="76.19999694824219" y="9.399993896484375" textLength="12.633331298828125" lengthAdjust="spacingAndGlyphs">CSS</tspan>
+                </text>
+            </g>
+            <g data-tag="div" id="div1" data-z-index="auto" data-stacking-context="true">
+                <text color="rgb(0, 0, 0)" dominant-baseline="text-after-edge"
+                      font-family="ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;"
+                      font-size="6px" font-size-adjust="none" font-stretch="100%" font-style="normal"
+                      font-variant="normal" font-weight="400" direction="ltr" letter-spacing="normal"
+                      text-decoration="rgb(0, 0, 0)" text-anchor="start" text-rendering="auto" unicode-bidi="isolate"
+                      word-spacing="0px" writing-mode="horizontal-tb" user-select="auto" fill="rgb(0, 0, 0)">
+                    <tspan xml:space="preserve" x="76.19999694824219" y="18.399993896484375" textLength="31.083343505859375" lengthAdjust="spacingAndGlyphs">MODULES</tspan>
+                </text>
+            </g>
+            <g data-tag="div" id="block1" class="block underline" data-z-index="auto" data-stacking-context="true">
+                <text color="rgb(0, 0, 0)" dominant-baseline="text-after-edge"
+                      font-family="ui-sans-serif, system-ui, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;"
+                      font-size="6px" font-size-adjust="none" font-stretch="100%" font-style="normal"
+                      font-variant="normal" font-weight="400" direction="ltr" letter-spacing="normal"
+                      text-decoration="underline rgb(0, 0, 0)" text-anchor="start" text-rendering="auto"
+                      unicode-bidi="isolate" word-spacing="0px" writing-mode="horizontal-tb" user-select="auto"
+                      fill="rgb(0, 0, 0)">
+                    <tspan xml:space="preserve" x="76.19999694824219" y="27.399993896484375" textLength="11.550003051757812" lengthAdjust="spacingAndGlyphs">ALL</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

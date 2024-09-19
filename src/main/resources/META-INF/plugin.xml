@@ -15,6 +15,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h2>0.0.10</h2>
+        <ul>
+            <li>fix fetal error : TypeScript type miss</li>
+            <li>add plugin icon</li>
+        </ul>
         <h2>0.0.9</h2>
         <ul>
             <li> fix bug with Compatibility Verification  </li>
@@ -62,7 +67,6 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
     <depends>JavaScript</depends>
-    <depends>NodeJS</depends>
     <depends>com.intellij.css</depends>
 
     <extensions defaultExtensionNs="com.intellij">
