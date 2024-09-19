@@ -1,6 +1,6 @@
 package com.exapmle.css;
 
-import com.example.css.QScssUtil;
+import com.example.ide.css.QScssUtil;
 import org.junit.Assert;
 import org.junit.Test;
 

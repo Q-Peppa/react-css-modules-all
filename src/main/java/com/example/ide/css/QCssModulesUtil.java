@@ -1,5 +1,5 @@
 
-package com.example.css;
+package com.example.ide.css;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ecmascript6.psi.ES6FromClause;
@@ -19,7 +19,6 @@ import com.intellij.psi.css.*;
 import com.intellij.psi.filters.ElementFilter;
 import com.intellij.psi.filters.position.FilterPattern;
 import com.intellij.psi.util.PsiTreeUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,20 +59,21 @@ public class QCssModulesUtil {
             return JSLiteralExpression.class.isAssignableFrom(hintClass);
         }
     }));
+    public static void refreshMap(StylesheetFile stylesheetFile){
+        initContainer();
+        CssModulesClassNameCompletionContributor.completionHelper(null , stylesheetFile);
+    }
 
     /**
      * Gets the CssClass PSI element whose name matches the specified cssClassName
      *
-     * @param stylesheetFile the PSI style sheet file to visit
-     * @param cssClass       the class to find, including the leading ".", e.g. ".my-class-name"
+     * @param cssClass  the class to find, including the leading ".", e.g. ".my-class-name"
      * @return the matching class or <code>null</code> if no matches are found
      */
-    public static CssSelector getCssClass(StylesheetFile stylesheetFile, String cssClass) {
-        if (psiElementRefHashMap.isEmpty()) {
-            CssModulesClassNameCompletionContributor.completionHelper(null , stylesheetFile);
-        }
+    @Nullable
+    public static CssSelector getCssClass( String cssClass) {
         if (psiElementRefHashMap.containsKey(cssClass)) return psiElementRefHashMap.get(cssClass)[0];
-        return PsiTreeUtil.findChildOfType(stylesheetFile, CssSelector.class);
+        return null;
     }
 
 
@@ -137,11 +137,13 @@ public class QCssModulesUtil {
      * @param referencedStyleSheet     ref to set to the style sheet that any matching CSS class is declared in
      * @return the matching CSS class, or <code>null</code> in case the class is unknown
      */
+    @Nullable
     public static CssSelector getCssClass(PsiElement cssFileNameLiteralParent, String cssClass, Ref<StylesheetFile> referencedStyleSheet) {
         StylesheetFile stylesheetFile = resolveStyleSheetFile(cssFileNameLiteralParent);
         if (stylesheetFile != null) {
             referencedStyleSheet.set(stylesheetFile);
-            return getCssClass(stylesheetFile, cssClass);
+            refreshMap(stylesheetFile);
+            return getCssClass(cssClass);
         } else {
             referencedStyleSheet.set(null);
             return null;

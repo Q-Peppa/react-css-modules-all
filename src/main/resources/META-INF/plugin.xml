@@ -70,20 +70,22 @@
     <depends>com.intellij.css</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <psi.referenceContributor implementation="com.example.css.CssModulesIndexedStylesVarPsiReferenceContributor"/>
+        <psi.referenceContributor implementation="com.example.ide.psi.CssModulesIndexedStylesVarPsiReferenceContributor"/>
         <completion.contributor language="ECMAScript 6"
-                                implementationClass="com.example.css.CssModulesClassNameCompletionContributor"/>
+                                implementationClass="com.example.ide.css.CssModulesClassNameCompletionContributor"/>
 
         <completion.contributor language="TypeScript JSX"
-                                implementationClass="com.example.css.CssModulesClassNameCompletionContributor"/>
+                                implementationClass="com.example.ide.css.CssModulesClassNameCompletionContributor"/>
 
         <lang.documentationProvider
-                implementationClass="com.example.document.SimpleDocumentationProvider"
+                implementationClass="com.example.ide.document.SimpleDocumentationProvider"
                 language="TypeScript JSX"/>
 
         <lang.documentationProvider
-                implementationClass="com.example.document.SimpleDocumentationProvider"
+                implementationClass="com.example.ide.document.SimpleDocumentationProvider"
                 language="ECMAScript 6"/>
+        <annotator language="TypeScript JSX" implementationClass="com.example.ide.annotator.CssModulesClassAnnotator"/>
+        <annotator language="ECMAScript 6" implementationClass="com.example.ide.annotator.CssModulesClassAnnotator"/>
     </extensions>
 
 

@@ -2,6 +2,10 @@
 
 support css module in react code completion
 
+### Origin
+- fork by https://github.com/jimkyndemeyer/react-css-modules-intellij-plugin/tree/master
+- template by  https://github.com/JetBrains/intellij-platform-plugin-template
+
 ### Install Plugin
 
 Plugin Home (https://plugins.jetbrains.com/plugin/25233-react-css-module-all/versions/stable/599113)
@@ -31,7 +35,8 @@ case it will be transformed css name case to camelCase
 ![1.jpg](src%2Fmain%2Fresources%2Fpic%2F1.jpg)
 ![2.jpg](src%2Fmain%2Fresources%2Fpic%2F2.jpg)
 ![3.jpg](src%2Fmain%2Fresources%2Fpic%2F3.jpg)
-
+![4.jpg](src%2Fmain%2Fresources%2Fpic%2F4.png)
+![5.jpg](src%2Fmain%2Fresources%2Fpic%2F5.png)
 
 ### Statement
 
