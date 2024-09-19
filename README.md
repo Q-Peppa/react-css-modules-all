@@ -39,4 +39,4 @@ This plugin not guaranteed all function work
 
 ### Already Issue
 
-There is no problem, welcome to submit an issue 
+1. can't identify .foo > &-bar#id , "&-bar#id" with another id selector
