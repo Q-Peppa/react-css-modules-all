@@ -3,6 +3,7 @@
     <id>react.css.module.all</id>
     <name>React Css Modules All</name>
     <vendor>Peppa</vendor>
+    <version>0.0.11</version>
     <resource-bundle>messages.MyBundle</resource-bundle>
     <description><![CDATA[
      <h1>React-Css-Module-All</h1>
