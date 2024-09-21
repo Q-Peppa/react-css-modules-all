@@ -157,8 +157,9 @@ internal object QCssModuleParseUtil {
         realName.clear()
     }
 
-    private fun getOriginCss(list: List<String>): ArrayList<String> {
+    fun getOriginCss(list: List<String>): ArrayList<String> {
         init();
+        if (list.isEmpty()) return arrayListOf()
         val head = ContainerUtil.getFirstItem(list)
         val strings = head.split(COMMA.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         if (head.contains(SPACE) && !head.contains(COMMA)) {

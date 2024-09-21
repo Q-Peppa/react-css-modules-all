@@ -13,22 +13,11 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiRecursiveElementVisitor
 import com.intellij.psi.css.CssClass
 import com.intellij.psi.css.CssRuleset
-import training.featuresSuggester.getParentOfType
+import com.intellij.psi.css.impl.CssSimpleSelectorImpl
 import java.util.Objects
 
 internal object QCssModulesUtil {
 
-
-    /**
-     * 获取指定 CSS 类的选择器
-     * @param cssClass CSS 类名
-     * @return 对应的 CssSelector 对象，如果不存在则返回 null
-     */
-    private fun getCssClass(cssClass: String, map: MutableMap<String, Array<CssSelector>>): CssSelector? {
-        val selectors = map[cssClass]
-        if (selectors?.isNotEmpty() == true) return selectors[0]
-        return null;
-    }
 
     /**
      * 获取import或require声明中的CSS类名
@@ -67,34 +56,67 @@ internal object QCssModulesUtil {
         return stylesheetFileRef.get();
     }
 
+    private fun getCssClass(stylesheetFile:StylesheetFile, name:String): PsiElement?{
+        var css:PsiElement? = null
+        stylesheetFile.accept(object : PsiRecursiveElementVisitor() {
+            override fun visitElement(element: PsiElement) {
+                if (css != null) return;
+                if (element is CssClass && element.text == name) {
+                    css = element
+                    return;
+                }else if (element is CssSimpleSelectorImpl && element.text.startsWith("&")) {
+                   // 可能需要查询的 name 是拼接来的
+                    val  cssSimpleSelector = element as CssSimpleSelectorImpl
+                    val path = mutableListOf<String>()
+                    PsiTreeUtil.findFirstParent(cssSimpleSelector) {
+                        if (it is CssRuleset) {
+                            val cellName = it.presentableText.trim()
+                            path.add(cellName)
+                            cellName.startsWith(".") && !cellName.contains("&")
+                        }
+                        false
+                    }
+                    path[0] = cssSimpleSelector.presentableText.trim()
+                    path.reverse()
+                    val curConnectResult = QCssModuleParseUtil.getOriginCss(path)
+                    if (curConnectResult.contains(".$name")) {
+                        css = cssSimpleSelector
+                        return
+                    }
+
+                }
+                super.visitElement(element)
+            }
+        })
+        return css
+    }
     /**
      * 获取指定元素的 CSS 类选择器
-     * @param element PsiElement 对象
-     * @param cssClass CSS 类名
+     * @param element PsiElement 对象, 用于获取 StylesheetFile
+     * @param cssClass CSS 类名 , 需要在 StylesheetFile 查询的类名 , 注意, cssClass不包含 . (点)
      * @param rs 用于存储解析后的 StylesheetFile 的引用
      * @return 对应的 CssSelector 对象，如果不存在则返回 null
      */
-    fun getCssClass(element: PsiElement, cssClass: String, rs: Ref<StylesheetFile>): CssSelector? {
+    fun getCssClass(element: PsiElement, cssClass: String, rs: Ref<StylesheetFile>): PsiElement? {
         val styleSheetFile = resolveStyleSheetFile(element)
         if (styleSheetFile == null) {
             rs.set(null)
             return null
         }
-        val child = findChild(element, styleSheetFile)
+        // 如果不需要拼接, 那就直接可以查询到
+        val child = findChild(cssClass, styleSheetFile)
         if (child != null) return PsiTreeUtil.getParentOfType(child, CssSelector::class.java)
 
-        val mapCache = QCssModuleParseUtil.parseCssSelectorFormFile(styleSheetFile)
-
-
         rs.set(styleSheetFile)
-        return getCssClass(cssClass, mapCache)
+        // 理论来说, 进入这个 getCssClass , 那就是 selector 是 & 拼接形成的
+        val selectors = getCssClass(styleSheetFile, cssClass)
+        return selectors
     }
 
-    private fun findChild(element: PsiElement, stylesheetFile: StylesheetFile): CssClass? {
-        for (clazz in PsiTreeUtil.findChildrenOfType(stylesheetFile, CssClass::class.java)) {
-            if (clazz.text == element.text) return clazz
+    private fun findChild(needQueryName: String, stylesheetFile: StylesheetFile): CssClass? {
+        return PsiTreeUtil.findChildrenOfType(stylesheetFile, CssClass::class.java).find {
+            it.name == needQueryName || it.nameIdentifier?.text == needQueryName
         }
-        return null;
     }
 
     /**
