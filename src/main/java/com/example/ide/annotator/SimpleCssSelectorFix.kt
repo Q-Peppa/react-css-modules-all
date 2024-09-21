@@ -40,8 +40,8 @@ class SimpleCssSelectorFix(private val key: String, private val stylesheetFile: 
             if (it is TextEditor) {
                 val cssEditor = it.editor
                 cssEditor.caretModel.moveToOffset(offset)
+
             }
         }
-        file.clearCaches()
     }
 }

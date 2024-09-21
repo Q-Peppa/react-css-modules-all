@@ -1,5 +1,6 @@
 package com.example.ide.annotator
 
+import com.example.ide.css.QCssModuleParseUtil
 import com.example.ide.message.QCssMessageBundle
 import com.example.ide.psi.CssModulesUnknownClassPsiReference
 import com.intellij.lang.annotation.AnnotationHolder
