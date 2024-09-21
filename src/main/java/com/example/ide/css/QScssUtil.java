@@ -5,7 +5,9 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ArrayUtil;
 import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class QScssUtil {
 
@@ -65,6 +67,38 @@ public class QScssUtil {
             }
         }
         return realName;
+    }
+
+    /**
+     * if getOriginCss not work , try this;
+     * @param selectors 一些列的选择器
+     * @return 最终解析的结果
+     */
+    public static List<String> getOriginCss2(List<String> selectors) {
+        if (selectors == null || selectors.isEmpty()) {
+            return List.of();
+        }
+
+        var result = selectors.stream().reduce((acc, curr) -> {
+            if (acc.isEmpty() || !curr.contains(CONNECT_FLAG)) {
+                return curr;
+            }
+
+            var parents = Arrays.stream(acc.split(COMMA))
+                    .map(String::trim)
+                    .map(s -> s.split(SPACE))
+                    .map(arr -> arr[arr.length - 1])
+                    .toList();
+
+            return Arrays.stream(curr.split(COMMA))
+                    .flatMap(part -> parents.stream()
+                            .map(parent -> (part.trim().replace(CONNECT_FLAG, parent))))
+                    .collect(Collectors.joining(COMMA + SPACE));
+        }).orElse(EMPTY_STRING);
+
+        return Arrays.stream(result.split(COMMA + SPACE))
+                .filter(s -> !s.isEmpty())
+                .toList();
     }
 
 }

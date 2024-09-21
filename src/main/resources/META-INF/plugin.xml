@@ -2,8 +2,8 @@
 <idea-plugin>
     <id>react.css.module.all</id>
     <name>React Css Modules All</name>
-    <version>0.0.9</version>
     <vendor>Peppa</vendor>
+    <resource-bundle>messages.MyBundle</resource-bundle>
     <description><![CDATA[
      <p>react-css-module-all</p>
      <h4>support css modules in project and not transform css case to camelCase</h4>
@@ -70,7 +70,10 @@
     <depends>com.intellij.css</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <psi.referenceContributor implementation="com.example.ide.psi.CssModulesIndexedStylesVarPsiReferenceContributor"/>
+        <psi.referenceContributor implementation="com.example.ide.psi.CssModulesIndexedStylesVarPsiReferenceContributorKt"
+                                  language="ECMAScript 6"/>
+        <psi.referenceContributor implementation="com.example.ide.psi.CssModulesIndexedStylesVarPsiReferenceContributorKt"
+                                  language="TypeScript JSX"/>
         <completion.contributor language="ECMAScript 6"
                                 implementationClass="com.example.ide.css.CssModulesClassNameCompletionContributor"/>
 

@@ -142,7 +142,7 @@ public class QCssModulesUtil {
         StylesheetFile stylesheetFile = resolveStyleSheetFile(cssFileNameLiteralParent);
         if (stylesheetFile != null) {
             referencedStyleSheet.set(stylesheetFile);
-            refreshMap(stylesheetFile);
+            QCssModuleParseUtil.Companion.parseCssSelectorFormFile(stylesheetFile);
             return getCssClass(cssClass);
         } else {
             referencedStyleSheet.set(null);

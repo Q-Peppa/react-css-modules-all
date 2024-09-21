@@ -1,5 +1,6 @@
 package com.example.ide.css;
 
+import com.example.ide.message.QCssMessageBundle;
 import com.intellij.codeInsight.completion.*;
 
 import com.intellij.codeInsight.lookup.LookupElement;
@@ -25,7 +26,8 @@ import java.util.regex.Pattern;
 final class CssModulesClassNameCompletionContributor extends CompletionContributor {
 
 
-    private final static String ProjectName = QCssMessage.message("projectName");
+    private final static String ProjectName = QCssMessageBundle.message("projectName");
+
 
     private static LookupElement buildLookupElement(
             @NotNull String name,

@@ -1,0 +1,15 @@
+@invalid-directive {
+  This is not a valid SCSS directive
+}
+
+.valid-class {
+  color: red;
+}
+
+#invalid:: {
+  content: "This is not a valid pseudo-element";
+}
+
+..double-dot-class {
+  margin: 10px;
+}
