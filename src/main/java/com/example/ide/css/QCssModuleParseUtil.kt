@@ -1,5 +1,6 @@
 package com.example.ide.css
 
+import com.intellij.idea.LoggerFactory
 import com.intellij.openapi.util.text.Strings
 import com.intellij.psi.PsiElement
 import com.intellij.psi.css.CssClass
@@ -12,25 +13,27 @@ import com.intellij.util.ArrayUtil
 import com.intellij.util.containers.ContainerUtil
 import org.apache.commons.lang3.StringUtils
 import java.util.*
-import java.util.regex.Pattern
+import com.intellij.openapi.diagnostic.logger
 import java.util.stream.Collectors
 
+private val LOG = logger<QCssModuleParseUtil>()
 
 internal object QCssModuleParseUtil {
+
     private const val COMMA: String = ","
     private const val EMPTY_STRING: String = ""
     private const val DOT: String = "."
     private const val SPACE: String = " "
     private const val CONNECT_FLAG: String = "&"
+    private val contentMap = hashMapOf<String , MutableMap<String, Array<CssSelector>>>()
 
-    @JvmStatic
-    val map: MutableMap<String, Array<CssSelector>> = mutableMapOf()
+
     private val realName: ArrayList<String> = arrayListOf<String>()
     /**
      * 解析scss,less 等高阶文件
      * @param stylesheetFile 样式表文件
      */
-    private fun parseOtherFile(stylesheetFile: StylesheetFile) {
+    private fun parseOtherFile(stylesheetFile: StylesheetFile, map: MutableMap<String, Array<CssSelector>>) {
         for (simpleSelector in PsiTreeUtil.findChildrenOfType(
             stylesheetFile,
             CssSimpleSelectorImpl::class.java
@@ -72,7 +75,7 @@ internal object QCssModuleParseUtil {
      * 解析css文件
      * @param stylesheetFile 样式表文件
      */
-    private fun parseCssFile(stylesheetFile: StylesheetFile) {
+    private fun parseCssFile(stylesheetFile: StylesheetFile,map: MutableMap<String, Array<CssSelector>>) {
         for (cssClass in PsiTreeUtil.findChildrenOfType(stylesheetFile, CssClass::class.java)) {
             if (QCssModulesUtil.isInTheGlobal(cssClass)) continue;
             val name = Strings.trim(cssClass.name) ?: ""
@@ -87,23 +90,31 @@ internal object QCssModuleParseUtil {
             }
         }
     }
+
+    // @help wanted parseCssSelectorFormFile方法调用的次数太多了 , 计算 styles 文件的 hash 明显太耗时了 , 需要更好的办法
+    // 目前缓存了文件的长度作为hash 的 key
     /**
      * 解析样式表文件, 此方法对外暴露, 外部调用的时候不需要关心是css还是scss还是less
      * @param stylesheetFile 样式表文件
      */
-    fun parseCssSelectorFormFile(stylesheetFile: StylesheetFile?): Array<String> {
-        println("parseCssSelectorFormFile will be  invoke name is ${stylesheetFile?.name}")
-        if (stylesheetFile == null || PsiTreeUtil.hasErrorElements(stylesheetFile)) return arrayOf()
-        map.clear()
+    fun parseCssSelectorFormFile(stylesheetFile: StylesheetFile?): MutableMap<String, Array<CssSelector>> {
+        if (stylesheetFile == null || PsiTreeUtil.hasErrorElements(stylesheetFile)) return mutableMapOf()
+        if (contentMap.containsKey(stylesheetFile.text.length.toString())) return contentMap[stylesheetFile.text.length.toString()] ?: mutableMapOf()
+        val map = mutableMapOf<String, Array<CssSelector>>()
         val fileName = stylesheetFile.name
-        parseCssFile(stylesheetFile)
-        if (fileName.matches(Regex(".*\\.css$", RegexOption.IGNORE_CASE))) {
-            println("parseCssFile end , ans = ${map.keys.toList()}")
-            return map.keys.toTypedArray()
+        try {
+            parseCssFile(stylesheetFile,map)
+            if (fileName.matches(Regex(".*\\.css$", RegexOption.IGNORE_CASE))) {
+                return map
+            }
+            parseOtherFile(stylesheetFile,map)
+            return map
+        }catch (e:Exception) {
+            LOG.warn("code exception cause {} $e" ,e)
+            return mutableMapOf()
+        }finally {
+            contentMap[stylesheetFile.text.length.toString()] = map;
         }
-        parseOtherFile(stylesheetFile)
-        println("parseOtherFile end , ans = ${map.keys.toList()}")
-        return map.keys.toTypedArray()
     }
 
 

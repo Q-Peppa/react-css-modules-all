@@ -5,16 +5,32 @@
     <vendor>Peppa</vendor>
     <resource-bundle>messages.MyBundle</resource-bundle>
     <description><![CDATA[
-     <p>react-css-module-all</p>
-     <h4>support css modules in project and not transform css case to camelCase</h4>
-     <ul>
-         <li>auto detected css module class name add completion</li>
-         <li>enable support & in scss file</li>
-         <li>find reference support</li>
-     </ul>
+     <h1>React-Css-Module-All</h1>
+     <h2>support css modules in project and not transform css case to camelCase</h4>
+     <h3>
+          <ul>
+             <li>auto-detected css module class name add completion</li>
+             <li>support parse Parent Selector(&) in scss file</li>
+             <li>find reference support, click name navigate to styles file</li>
+             <li>quick fix css selector not exist</li>
+         </ul>
+     </h3>
+     <h4>
+        <p>will support</p>
+        <ul>
+            <li>quick documentation when mouse hover</li>
+        </ul>
+     </h4>
+
     ]]></description>
 
     <change-notes><![CDATA[
+        <h2>0.0.11</h2>
+        <ul>
+            <li>temporary close SimpleDocumentationProvider function cause not test</li>
+            <li>add code test for parse css/scss</li>
+            <li>re-write plugin code use kotlin</li>
+        </ul>
         <h2>0.0.10</h2>
         <ul>
             <li>fix fetal error : TypeScript type miss</li>

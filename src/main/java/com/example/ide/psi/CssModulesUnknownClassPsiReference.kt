@@ -7,11 +7,10 @@ import com.intellij.psi.css.StylesheetFile
 
 class CssModulesUnknownClassPsiReference(
     element: PsiElement,
-    rangeInElement: TextRange?,
     val stylesheetFile: StylesheetFile
 ) :
-    PsiReferenceBase<PsiElement?>(element, rangeInElement) {
-    override fun resolve(): PsiElement? {
+    PsiReferenceBase<PsiElement?>(element) {
+    override fun resolve(): PsiElement {
         // self reference to prevent JS tooling from reporting unresolved symbol
         return this.element
     }

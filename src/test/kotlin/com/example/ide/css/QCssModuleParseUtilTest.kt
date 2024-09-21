@@ -16,7 +16,7 @@ class QCssModuleParseUtilTest : BasePlatformTestCase() {
         val psiFile =
             myFixture.configureByText(CssFileType.INSTANCE, myFixture.configureFromTempProjectFile(file).text)
         val res = QCssModuleParseUtil.parseCssSelectorFormFile(psiFile as StylesheetFile)
-        return res.sorted()
+        return res.keys.sorted()
     }
 
     override fun setUp() {
@@ -42,7 +42,7 @@ class QCssModuleParseUtilTest : BasePlatformTestCase() {
             myFixture.configureFromTempProjectFile("basic/styles.scss").text
         )
         val res = QCssModuleParseUtil.parseCssSelectorFormFile(fromText as StylesheetFile);
-        assertEquals(res.sorted(), getRightCase("basic/styles.right.css"))
+        assertEquals(res.keys.sorted(), getRightCase("basic/styles.right.css"))
     }
 
     fun testDeepNest() {
@@ -51,7 +51,7 @@ class QCssModuleParseUtilTest : BasePlatformTestCase() {
             myFixture.configureFromTempProjectFile("deep/deep_nest.scss").text
         )
         val res = QCssModuleParseUtil.parseCssSelectorFormFile(fromText as StylesheetFile)
-        assertEquals(getRightCase("deep/deep_nest.right.css"), res.sorted())
+        assertEquals(getRightCase("deep/deep_nest.right.css"), res.keys.sorted())
     }
 
     fun testMixinAndExtend() {
@@ -60,7 +60,7 @@ class QCssModuleParseUtilTest : BasePlatformTestCase() {
             myFixture.configureFromTempProjectFile("mixin/mixin.scss").text
         )
         val res = QCssModuleParseUtil.parseCssSelectorFormFile(fromText as StylesheetFile)
-        assertEquals(getRightCase("mixin/mixin.right.css"), res.sorted())
+        assertEquals(getRightCase("mixin/mixin.right.css"), res.keys.sorted())
     }
 
     fun testComplexMediaAndKeyframes() {
@@ -69,7 +69,7 @@ class QCssModuleParseUtilTest : BasePlatformTestCase() {
             myFixture.configureFromTempProjectFile("media/complex.scss").text
         )
         val res = QCssModuleParseUtil.parseCssSelectorFormFile(fromText as StylesheetFile)
-        assertEquals(getRightCase("media/complex.right.css"), res.sorted())
+        assertEquals(getRightCase("media/complex.right.css"), res.keys.sorted())
     }
 
     fun testEmptyFile() {
@@ -108,6 +108,6 @@ class QCssModuleParseUtilTest : BasePlatformTestCase() {
             myFixture.configureFromTempProjectFile("tag/tag_selectors.scss").text
         )
         val res = QCssModuleParseUtil.parseCssSelectorFormFile(fromText as StylesheetFile)
-        assertEquals(getRightCase("tag/tag_selectors.right.css"), res.sorted())
+        assertEquals(getRightCase("tag/tag_selectors.right.css"), res.keys.sorted())
     }
 }

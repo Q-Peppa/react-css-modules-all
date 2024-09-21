@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull
 internal class CssModulesClassNameCompletionContributor : CompletionContributor() {
 
     private val projectName = QCssMessageBundle.message("projectName")
-    private val psiElementRefHashMap = QCssModuleParseUtil.map
     private fun buildLookupElement(
         name: String,
         desc: String,
@@ -34,7 +33,7 @@ internal class CssModulesClassNameCompletionContributor : CompletionContributor(
         if (stylesheetFile.parent == null) return
         val folderName = stylesheetFile.parent?.name
         val fileName = stylesheetFile.name
-        QCssModuleParseUtil.parseCssSelectorFormFile(stylesheetFile, )
+        val psiElementRefHashMap = QCssModuleParseUtil.parseCssSelectorFormFile(stylesheetFile)
         psiElementRefHashMap.forEach { (name, cssSelectors) ->
             if (cssSelectors.isNotEmpty()) {
                 val desc =
@@ -45,7 +44,6 @@ internal class CssModulesClassNameCompletionContributor : CompletionContributor(
     }
 
     private fun addCompletions(@NotNull resultSet: CompletionResultSet, @NotNull stylesheetFile: StylesheetFile) {
-        psiElementRefHashMap.clear()
         completionHelper(resultSet, stylesheetFile)
     }
 

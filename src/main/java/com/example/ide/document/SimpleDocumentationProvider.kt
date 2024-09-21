@@ -9,6 +9,10 @@ import com.intellij.psi.css.CssSelector
 import com.intellij.psi.util.PsiTreeUtil
 import java.util.*
 
+/**
+ *
+ */
+@Deprecated(message = "code not test , maybe cause error")
 class SimpleDocumentationProvider : AbstractDocumentationProvider() {
 
     private fun renderDoc(cssSelector: CssSelector, name: String): String? {

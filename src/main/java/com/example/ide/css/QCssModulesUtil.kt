@@ -11,18 +11,21 @@ import com.intellij.psi.css.StylesheetFile
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiRecursiveElementVisitor
+import com.intellij.psi.css.CssClass
 import com.intellij.psi.css.CssRuleset
+import training.featuresSuggester.getParentOfType
 import java.util.Objects
 
 internal object QCssModulesUtil {
+
 
     /**
      * 获取指定 CSS 类的选择器
      * @param cssClass CSS 类名
      * @return 对应的 CssSelector 对象，如果不存在则返回 null
      */
-    private fun getCssClass(cssClass: String): CssSelector? {
-        val selectors = QCssModuleParseUtil.map[cssClass]
+    private fun getCssClass(cssClass: String, map: MutableMap<String, Array<CssSelector>>): CssSelector? {
+        val selectors = map[cssClass]
         if (selectors?.isNotEmpty() == true) return selectors[0]
         return null;
     }
@@ -77,9 +80,21 @@ internal object QCssModulesUtil {
             rs.set(null)
             return null
         }
-        QCssModuleParseUtil.parseCssSelectorFormFile(styleSheetFile, )
+        val child = findChild(element, styleSheetFile)
+        if (child != null) return PsiTreeUtil.getParentOfType(child, CssSelector::class.java)
+
+        val mapCache = QCssModuleParseUtil.parseCssSelectorFormFile(styleSheetFile)
+
+
         rs.set(styleSheetFile)
-        return getCssClass(cssClass)
+        return getCssClass(cssClass, mapCache)
+    }
+
+    private fun findChild(element: PsiElement, stylesheetFile: StylesheetFile): CssClass? {
+        for (clazz in PsiTreeUtil.findChildrenOfType(stylesheetFile, CssClass::class.java)) {
+            if (clazz.text == element.text) return clazz
+        }
+        return null;
     }
 
     /**
