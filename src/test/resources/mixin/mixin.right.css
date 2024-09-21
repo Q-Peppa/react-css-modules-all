@@ -1,0 +1,23 @@
+.secondary-button,
+.primary-button {
+  transition: all 0.3s ease;
+}
+
+.secondary-button:hover,
+.primary-button:hover {
+  transform: translateY(-2px);
+}
+
+.primary-button {
+  padding: 10px 15px;
+  border-radius: 5px;
+  background-color: blue;
+  color: white;
+}
+
+.secondary-button {
+  padding: 10px 15px;
+  border-radius: 5px;
+  background-color: gray;
+  color: black;
+}

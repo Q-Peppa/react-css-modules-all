@@ -44,4 +44,5 @@ This plugin not guaranteed all function work
 
 ### Already Issue
 
-1. can't identify .foo > &-bar#id , "&-bar#id" with another id selector
+1. can't identify .foo > &-bar#id , "&-bar#id" with another id selector'
+2. com.example.ide.css.QCssModuleParseUtil.parseCssSelectorFormFile use too long time and may cause StandaloneCoroutine error

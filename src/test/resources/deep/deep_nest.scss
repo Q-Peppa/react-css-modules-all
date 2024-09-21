@@ -1,0 +1,54 @@
+.level-1 {
+  padding: 10px;
+
+  .level-2 {
+    margin: 5px;
+
+    &__item {
+      color: blue;
+
+      .level-3 {
+        font-size: 14px;
+
+        > .level-4 {
+          display: flex;
+
+          .level-5 {
+            flex: 1;
+
+            &:hover {
+              background-color: #f0f0f0;
+
+              .level-6 {
+                opacity: 0.8;
+
+                + .level-7 {
+                  border: 1px solid #ccc;
+
+                  .level-8 {
+                    text-align: center;
+
+                    @media (max-width: 768px) {
+                      .level-9 {
+                        font-weight: bold;
+
+                        &::before {
+                          content: '';
+                          display: block;
+
+                          .level-10 {
+                            transform: scale(0.9);
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+div {
+  display: block;
+}
+
+p {
+  margin-bottom: 1em;
+}
+
+a.external-link {
+  color: blue;
+  text-decoration: underline;
+}
+
+span#highlight {
+  background-color: yellow;
+}
+
+nav ul li {
+  list-style-type: none;
+}
+
+article>p {
+  font-size: 16px;
+}
+
+h1+p {
+  font-weight: bold;
+}
+
+h2~p {
+  color: gray;
+}
+
+input[type=text] {
+  border: 1px solid #ccc;
+}
+
+a:hover {
+  color: red;
+}
+
+p::first-line {
+  font-variant: small-caps;
+}
+
+div.container,
+p.text,
+span.highlight {
+  padding: 10px;
+}

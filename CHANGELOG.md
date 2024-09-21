@@ -1,5 +1,12 @@
 # react-css-modules-all
 
+## [0.0.11] - 2024-09-22
+
+1. temporary close SimpleDocumentationProvider function cause not test
+2. add code test for parse css/scss
+3. re-write plugin code use kotlin
+
+
 ## [0.0.10] - 2024-09-19
 
 1. fix fetal error : TypeScript type miss
