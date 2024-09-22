@@ -1,0 +1,31 @@
+@media screen and (max-width: 768px) {
+  .mobile-menu {
+    display: block;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .tablet-layout {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.animated-element {
+  animation: fadeIn 1s ease-in-out;
+}
+
+@supports (display: grid) {
+  .grid-layout {
+    display: grid;
+  }
+}

@@ -12,11 +12,17 @@ plugins {
 group = providers.gradleProperty("pluginGroup").get()
 version = providers.gradleProperty("pluginVersion").get()
 
-kotlin {
-    jvmToolchain(21)
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
 }
 
+
 repositories {
+    mavenCentral()
+    maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
+    maven("https://www.jetbrains.com/intellij-repository/snapshots")
+    maven("https://packages.jetbrains.team/maven/p/grazi/grazie-platform-public")
+    maven("https://download.jetbrains.com/teamcity-repository")
     maven { setUrl("https://maven.aliyun.com/repository/central") }
     maven { setUrl("https://maven.aliyun.com/repository/jcenter") }
     maven { setUrl("https://maven.aliyun.com/repository/google") }
@@ -41,6 +47,7 @@ dependencies {
         webstorm("2024.2")
         bundledPlugin("JavaScript")
         instrumentationTools()
+        bundledPlugin("org.jetbrains.plugins.sass")
         testFramework(TestFrameworkType.Platform)
     }
 }
@@ -66,9 +73,6 @@ intellijPlatform {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
             untilBuild = providers.gradleProperty("pluginUntilBuild")
         }
-
-
-
     }
 
     publishing {
@@ -88,4 +92,3 @@ changelog {
     groups.empty()
     repositoryUrl = providers.gradleProperty("pluginRepositoryUrl")
 }
-

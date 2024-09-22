@@ -1,0 +1,25 @@
+@mixin button-base {
+  padding: 10px 15px;
+  border-radius: 5px;
+}
+
+%hover-effect {
+  transition: all 0.3s ease;
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.primary-button {
+  @include button-base;
+  background-color: blue;
+  color: white;
+  @extend %hover-effect;
+}
+
+.secondary-button {
+  @include button-base;
+  background-color: gray;
+  color: black;
+  @extend %hover-effect;
+}
