@@ -12,43 +12,38 @@ import com.intellij.psi.css.StylesheetFile
 import com.intellij.util.ProcessingContext
 import org.jetbrains.annotations.NotNull
 
-
 internal class CssModulesClassNameCompletionContributor : CompletionContributor() {
 
     private val projectName = QCssMessageBundle.message("projectName")
-    private fun buildLookupElement(
-        name: String,
-        desc: String,
-        psiElement: PsiElement?
-    ): LookupElement {
-        val builder = LookupElementBuilder.create(name)
-            .withTailText(desc).withIcon(AllIcons.Xml.Css_class).bold().withCaseSensitivity(true)
-        psiElement.let {
-            builder.withPsiElement(it)
-        }
-        return builder
+
+    private fun buildLookupElement(name: String, desc: String, psiElement: PsiElement?): LookupElement {
+        return LookupElementBuilder.create(name)
+            .withTailText(desc)
+            .withIcon(AllIcons.Xml.Css_class)
+            .bold()
+            .withCaseSensitivity(true)
+            .apply { psiElement?.let { withPsiElement(it) } }
     }
 
-    private fun completionHelper(@NotNull resultSet: CompletionResultSet, @NotNull stylesheetFile: StylesheetFile) {
-        if (stylesheetFile.parent == null) return
-        val folderName = stylesheetFile.parent?.name
-        val fileName = stylesheetFile.name
-        val psiElementRefHashMap = QCssModuleParseUtil.parseCssSelectorFormFile(stylesheetFile)
-        psiElementRefHashMap.forEach { (name, cssSelectors) ->
-            if (cssSelectors.isNotEmpty()) {
-                val desc =
-                    " (" + folderName + "/" + fileName + ":" + cssSelectors[0].lineNumber + ")_by_" + projectName;
-                resultSet.addElement(buildLookupElement(name, desc, cssSelectors[0]))
+    private fun completionHelper(resultSet: CompletionResultSet, stylesheetFile: StylesheetFile) {
+        stylesheetFile.parent?.let { parent ->
+            val folderName = parent.name
+            val fileName = stylesheetFile.name
+            val psiElementRefHashMap = QCssModuleParseUtil.parseCssSelectorFormFile(stylesheetFile)
+            psiElementRefHashMap.forEach { (name, cssSelectors) ->
+                if (cssSelectors.isNotEmpty()) {
+                    val desc = " ($folderName/$fileName:${cssSelectors[0].lineNumber})_by_$projectName"
+                    resultSet.addElement(buildLookupElement(name, desc, cssSelectors[0]))
+                }
             }
         }
     }
 
-    private fun addCompletions(@NotNull resultSet: CompletionResultSet, @NotNull stylesheetFile: StylesheetFile) {
+    private fun addCompletions(resultSet: CompletionResultSet, stylesheetFile: StylesheetFile) {
         completionHelper(resultSet, stylesheetFile)
     }
 
     init {
-
         val provider = object : CompletionProvider<CompletionParameters>() {
             override fun addCompletions(
                 parameters: CompletionParameters,
@@ -58,22 +53,14 @@ internal class CssModulesClassNameCompletionContributor : CompletionContributor(
                 val completionElement = parameters.originalPosition ?: parameters.position
                 if (completionElement.parent is JSLiteralExpression) {
                     val literalExpression = completionElement.parent as JSLiteralExpression
-                    val declaration =
-                        QCssModulesUtil.getCssClassNamesImportOrRequireDeclaration(literalExpression)
-
-                    declaration?.let {
-                        val styleSheetFile = QCssModulesUtil.resolveStyleSheetFile(it)
-                        styleSheetFile?.let {
+                    QCssModulesUtil.getCssClassNamesImportOrRequireDeclaration(literalExpression)?.let { declaration ->
+                        QCssModulesUtil.resolveStyleSheetFile(declaration)?.let { styleSheetFile ->
                             addCompletions(resultSet, styleSheetFile)
                         }
                     }
                 }
             }
         }
-        this.extend(
-            CompletionType.BASIC,
-            PlatformPatterns.psiElement(),
-            provider
-        )
+        extend(CompletionType.BASIC, PlatformPatterns.psiElement(), provider)
     }
 }

@@ -17,14 +17,14 @@ class CssModulesClassAnnotator : Annotator {
         if (!isStyleIndex(psiElement)) return;
 
         val cssSelectorName = psiElement.stringValue?.trim().orEmpty()
-        psiElement.references.forEach {
-            if (it is CssModulesUnknownClassPsiReference) {
-                val message = "${QCssMessageBundle.message("UnknownClassName")} \"$cssSelectorName\""
-                holder.newAnnotation(HighlightSeverity.WEAK_WARNING, message)
-                    .range(psiElement)
-                    .withFix(SimpleCssSelectorFix(cssSelectorName, it.stylesheetFile))
-                    .create()
-            }
+        if (psiElement.reference is CssModulesUnknownClassPsiReference) {
+            val temp = psiElement.reference as CssModulesUnknownClassPsiReference
+            val message = "${QCssMessageBundle.message("UnknownClassName")} \"$cssSelectorName\""
+            holder.newAnnotation(HighlightSeverity.WEAK_WARNING, message)
+                .range(psiElement)
+                .withFix(SimpleCssSelectorFix(cssSelectorName, temp.stylesheetFile))
+                .create()
         }
+
     }
 }
