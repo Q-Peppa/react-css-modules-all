@@ -1,6 +1,8 @@
 package com.example.ide.psi
 
-import com.example.ide.css.QCssModulesUtil
+
+import com.example.ide.css.getCssClass
+import com.example.ide.css.getCssClassNamesImportOrRequireDeclaration
 import com.intellij.lang.javascript.JSTokenTypes
 import com.intellij.lang.javascript.psi.JSFile
 import com.intellij.lang.javascript.psi.JSIndexedPropertyAccessExpression
@@ -28,11 +30,11 @@ class CssModuleReferenceProvider : PsiReferenceProvider() {
         val name = element.stringValue?.trim().orEmpty()
         if (name.isBlank()) return PsiReference.EMPTY_ARRAY
 
-        val cssClassNamesImportOrRequire = QCssModulesUtil.getCssClassNamesImportOrRequireDeclaration(element)
+        val cssClassNamesImportOrRequire = getCssClassNamesImportOrRequireDeclaration(element)
             ?: return PsiReference.EMPTY_ARRAY
 
         val referencedStyleSheet = Ref<StylesheetFile>()
-        val cssClass = QCssModulesUtil.getCssClass(cssClassNamesImportOrRequire, name, referencedStyleSheet)
+        val cssClass = getCssClass(cssClassNamesImportOrRequire, name, referencedStyleSheet)
         
         return cssClass?.let {
             arrayOf(object : PsiReferenceBase<PsiElement>(element) {

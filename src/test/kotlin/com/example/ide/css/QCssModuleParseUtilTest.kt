@@ -15,7 +15,7 @@ class QCssModuleParseUtilTest : BasePlatformTestCase() {
     private fun getRightCase(file: String): List<String> {
         val psiFile =
             myFixture.configureByText(CssFileType.INSTANCE, myFixture.configureFromTempProjectFile(file).text)
-        val res = QCssModuleParseUtil.parseCssSelectorFormFile(psiFile as StylesheetFile)
+        val res = parseCssSelectorFormFile(psiFile as StylesheetFile)
         return res.keys.sorted()
     }
 
@@ -41,7 +41,7 @@ class QCssModuleParseUtilTest : BasePlatformTestCase() {
             SCSSFileType.SCSS,
             myFixture.configureFromTempProjectFile("basic/styles.scss").text
         )
-        val res = QCssModuleParseUtil.parseCssSelectorFormFile(fromText as StylesheetFile);
+        val res = parseCssSelectorFormFile(fromText as StylesheetFile);
         assertEquals(res.keys.sorted(), getRightCase("basic/styles.right.css"))
     }
 
@@ -50,7 +50,7 @@ class QCssModuleParseUtilTest : BasePlatformTestCase() {
             SCSSFileType.SCSS,
             myFixture.configureFromTempProjectFile("deep/deep_nest.scss").text
         )
-        val res = QCssModuleParseUtil.parseCssSelectorFormFile(fromText as StylesheetFile)
+        val res = parseCssSelectorFormFile(fromText as StylesheetFile)
         assertEquals(getRightCase("deep/deep_nest.right.css"), res.keys.sorted())
     }
 
@@ -59,7 +59,7 @@ class QCssModuleParseUtilTest : BasePlatformTestCase() {
             SCSSFileType.SCSS,
             myFixture.configureFromTempProjectFile("mixin/mixin.scss").text
         )
-        val res = QCssModuleParseUtil.parseCssSelectorFormFile(fromText as StylesheetFile)
+        val res = parseCssSelectorFormFile(fromText as StylesheetFile)
         assertEquals(getRightCase("mixin/mixin.right.css"), res.keys.sorted())
     }
 
@@ -68,7 +68,7 @@ class QCssModuleParseUtilTest : BasePlatformTestCase() {
             SCSSFileType.SCSS,
             myFixture.configureFromTempProjectFile("media/complex.scss").text
         )
-        val res = QCssModuleParseUtil.parseCssSelectorFormFile(fromText as StylesheetFile)
+        val res = parseCssSelectorFormFile(fromText as StylesheetFile)
         assertEquals(getRightCase("media/complex.right.css"), res.keys.sorted())
     }
 
@@ -77,7 +77,7 @@ class QCssModuleParseUtilTest : BasePlatformTestCase() {
             SCSSFileType.SCSS,
             myFixture.configureFromTempProjectFile("edge_cases/empty.scss").text
         )
-        val res = QCssModuleParseUtil.parseCssSelectorFormFile(fromText as StylesheetFile)
+        val res = parseCssSelectorFormFile(fromText as StylesheetFile)
         assertTrue("Empty file should return an empty array", res.isEmpty())
     }
 
@@ -86,7 +86,7 @@ class QCssModuleParseUtilTest : BasePlatformTestCase() {
             SCSSFileType.SCSS,
             myFixture.configureFromTempProjectFile("edge_cases/malformed.scss").text
         )
-        val res = QCssModuleParseUtil.parseCssSelectorFormFile(fromText as StylesheetFile)
+        val res = parseCssSelectorFormFile(fromText as StylesheetFile)
         // The exact behavior might depend on how your parser handles malformed input
         // This is just an example assertion
         assertTrue("Malformed file should return at least some valid selectors", res.isEmpty())
@@ -97,7 +97,7 @@ class QCssModuleParseUtilTest : BasePlatformTestCase() {
             SCSSFileType.SCSS,
             myFixture.configureFromTempProjectFile("edge_cases/invalid_syntax.scss").text
         )
-        val res = QCssModuleParseUtil.parseCssSelectorFormFile(fromText as StylesheetFile)
+        val res = parseCssSelectorFormFile(fromText as StylesheetFile)
         // Again, the exact behavior might depend on your implementation
         assertTrue("File with invalid syntax should not crash the parser", res.isEmpty())
     }
@@ -107,7 +107,7 @@ class QCssModuleParseUtilTest : BasePlatformTestCase() {
             SCSSFileType.SCSS,
             myFixture.configureFromTempProjectFile("tag/tag_selectors.scss").text
         )
-        val res = QCssModuleParseUtil.parseCssSelectorFormFile(fromText as StylesheetFile)
+        val res = parseCssSelectorFormFile(fromText as StylesheetFile)
         assertEquals(getRightCase("tag/tag_selectors.right.css"), res.keys.sorted())
     }
 }

@@ -5,7 +5,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 // test for com/example/ide/css/QCssModuleParseUtil.kt
 
 fun nest(list:List<String>): List<String> {
-    return QCssModuleParseUtil.getOriginCss(list)
+    return getOriginCss(list)
 }
 class QCssModuleUtilTest : BasePlatformTestCase() {
     private fun showEqAfterSort(res: List<String> , expected: List<String>) {

@@ -1,5 +1,6 @@
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.changelog.Changelog
+import org.jetbrains.kotlin.ir.backend.jvm.jvmLibrariesProvidedByDefault
 
 plugins {
     id("java") // Java support
@@ -16,6 +17,9 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
 
+kotlin {
+   jvmToolchain(17)
+}
 
 repositories {
     mavenCentral()
