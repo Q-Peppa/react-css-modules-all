@@ -10,7 +10,6 @@ import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.PsiElement
 import com.intellij.psi.css.StylesheetFile
 import com.intellij.util.ProcessingContext
-import org.jetbrains.annotations.NotNull
 
 internal class CssModulesClassNameCompletionContributor : CompletionContributor() {
 
