@@ -15,7 +15,6 @@ import com.intellij.psi.filters.position.FilterPattern
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 import org.jetbrains.annotations.NotNull
-import java.util.*
 
 private val LOG = logger<CssModuleReferenceProvider>()
 
@@ -26,7 +25,7 @@ class CssModuleReferenceProvider : PsiReferenceProvider() {
         context: ProcessingContext
     ): Array<PsiReference> {
         if (element !is JSLiteralExpression) return PsiReference.EMPTY_ARRAY
-        val name = element.stringValue?.trim() ?: return PsiReference.EMPTY_ARRAY
+        val name = element.stringValue?.trim().orEmpty()
         if (name.isBlank()) return PsiReference.EMPTY_ARRAY
 
         val cssClassNamesImportOrRequire = QCssModulesUtil.getCssClassNamesImportOrRequireDeclaration(element)
@@ -35,24 +34,21 @@ class CssModuleReferenceProvider : PsiReferenceProvider() {
         val referencedStyleSheet = Ref<StylesheetFile>()
         val cssClass = QCssModulesUtil.getCssClass(cssClassNamesImportOrRequire, name, referencedStyleSheet)
         
-        return if (cssClass != null) {
+        return cssClass?.let {
             arrayOf(object : PsiReferenceBase<PsiElement>(element) {
-                override fun resolve(): PsiElement = cssClass
+                override fun resolve(): PsiElement = it
                 override fun getVariants(): Array<Any> = arrayOf()
             })
-        } else {
-            referencedStyleSheet.get()?.let {
-                try {
-                    arrayOf(CssModulesUnknownClassPsiReference(element, it))
-                } catch (e: Exception) {
-                    LOG.warn("CssModulesUnknownClassPsiReference cause error $e")
-                    PsiReference.EMPTY_ARRAY
-                }
-            } ?: PsiReference.EMPTY_ARRAY
-        }
+        } ?: referencedStyleSheet.get()?.let {
+            try {
+                arrayOf(CssModulesUnknownClassPsiReference(element, it))
+            } catch (e: Exception) {
+                LOG.warn("CssModulesUnknownClassPsiReference cause error $e")
+                PsiReference.EMPTY_ARRAY
+            }
+        } ?: PsiReference.EMPTY_ARRAY
     }
 }
-
 
 val CLASS_NAME_FILTER = PlatformPatterns.psiElement(JSLiteralExpression::class.java).and(FilterPattern(
     object : ElementFilter {
@@ -70,7 +66,6 @@ val CLASS_NAME_FILTER = PlatformPatterns.psiElement(JSLiteralExpression::class.j
     }
 ))
 
-
 class CssModulesIndexedStylesVarPsiReferenceContributorKt : PsiReferenceContributor() {
     override fun registerReferenceProviders(@NotNull registrar: PsiReferenceRegistrar) {
         registrar.registerReferenceProvider(
@@ -79,4 +74,5 @@ class CssModulesIndexedStylesVarPsiReferenceContributorKt : PsiReferenceContribu
     }
 }
 
-fun isStyleIndex(element: JSLiteralExpression): Boolean = PsiTreeUtil.getParentOfType(element, JSIndexedPropertyAccessExpression::class.java) != null
+fun isStyleIndex(element: JSLiteralExpression): Boolean = 
+    PsiTreeUtil.getParentOfType(element, JSIndexedPropertyAccessExpression::class.java) != null

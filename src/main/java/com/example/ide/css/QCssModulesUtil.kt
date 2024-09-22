@@ -126,12 +126,9 @@ internal object QCssModulesUtil {
      * @return 如果解析成功则返回 true，否则返回 false
      */
     fun resolveStyleSheetFile(element: PsiElement, sr: Ref<StylesheetFile>): Boolean {
-        for (reference in element.references) {
-            val fileReference = reference.resolve()
-            if (fileReference is StylesheetFile) {
-                sr.set(fileReference)
-                return true;
-            }
+        element.references.find { it.resolve() is StylesheetFile }?.resolve()?.let {
+            sr.set(it as StylesheetFile)
+            return true
         }
         return false
     }
@@ -142,9 +139,8 @@ internal object QCssModulesUtil {
      * @return 如果在:global{}范围内则返回 true，否则返回 false
      */
     fun isInTheGlobal(element: PsiElement): Boolean {
-        val parent = PsiTreeUtil.findFirstParent(element) {
+        return PsiTreeUtil.findFirstParent(element) {
             it is CssRuleset && it.presentableText.contains(":global")
-        }
-        return Objects.nonNull(parent)
+        } != null
     }
 }

@@ -97,13 +97,14 @@
         <completion.contributor language="TypeScript JSX"
                                 implementationClass="com.example.ide.css.CssModulesClassNameCompletionContributor"/>
 
-<!--        <lang.documentationProvider-->
-<!--                implementationClass="com.example.ide.document.SimpleDocumentationProvider"-->
-<!--                language="TypeScript JSX"/>-->
+        <lang.documentationProvider
 
-<!--        <lang.documentationProvider-->
-<!--                implementationClass="com.example.ide.document.SimpleDocumentationProvider"-->
-<!--                language="ECMAScript 6"/>-->
+                implementationClass="com.example.ide.document.SimpleDocumentationProvider"
+                language="TypeScript JSX"/>
+
+        <lang.documentationProvider
+                implementationClass="com.example.ide.document.SimpleDocumentationProvider"
+                language="ECMAScript 6"/>
         <annotator language="TypeScript JSX" implementationClass="com.example.ide.annotator.CssModulesClassAnnotator"/>
         <annotator language="ECMAScript 6" implementationClass="com.example.ide.annotator.CssModulesClassAnnotator"/>
     </extensions>
