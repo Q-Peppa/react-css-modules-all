@@ -24,6 +24,7 @@ internal object QCssModulesUtil {
      * @param classNameLiteral CSS 类名的字面量表达式
      * @return 对应的 PsiElement 对象，如果不存在则返回 null
      */
+    @JvmStatic
     fun getCssClassNamesImportOrRequireDeclaration(classNameLiteral: JSLiteralExpression): PsiElement? {
         val expression = PsiTreeUtil.getParentOfType(classNameLiteral, JSIndexedPropertyAccessExpression::class.java)
         if (expression?.qualifier?.reference?.resolve() != null) {
@@ -39,6 +40,7 @@ internal object QCssModulesUtil {
      * @param cssFileNameLiteralParent CSS 文件名的字面量表达式的父元素
      * @return 对应的 StylesheetFile 对象，如果不存在则返回 null
      */
+    @JvmStatic
     fun resolveStyleSheetFile(cssFileNameLiteralParent: PsiElement): StylesheetFile? {
         val stylesheetFileRef = Ref<StylesheetFile>()
         cssFileNameLiteralParent.accept(object : PsiRecursiveElementVisitor() {
@@ -97,6 +99,7 @@ internal object QCssModulesUtil {
      * @param rs 用于存储解析后的 StylesheetFile 的引用
      * @return 对应的 CssSelector 对象，如果不存在则返回 null
      */
+    @JvmStatic
     fun getCssClass(element: PsiElement, cssClass: String, rs: Ref<StylesheetFile>): PsiElement? {
         val styleSheetFile = resolveStyleSheetFile(element)
         if (styleSheetFile == null) {
@@ -125,6 +128,7 @@ internal object QCssModulesUtil {
      * @param sr 用于存储解析后的 StylesheetFile 的引用
      * @return 如果解析成功则返回 true，否则返回 false
      */
+    @JvmStatic
     fun resolveStyleSheetFile(element: PsiElement, sr: Ref<StylesheetFile>): Boolean {
         element.references.find { it.resolve() is StylesheetFile }?.resolve()?.let {
             sr.set(it as StylesheetFile)
