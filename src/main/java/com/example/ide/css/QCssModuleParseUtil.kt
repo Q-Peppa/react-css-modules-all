@@ -18,7 +18,7 @@ import java.util.stream.Collectors
 
 private val LOG = logger<QCssModuleParseUtil>()
 
-internal object QCssModuleParseUtil {
+object QCssModuleParseUtil {
 
     private const val COMMA: String = ","
     private const val EMPTY_STRING: String = ""
@@ -97,7 +97,6 @@ internal object QCssModuleParseUtil {
      * 解析样式表文件, 此方法对外暴露, 外部调用的时候不需要关心是css还是scss还是less
      * @param stylesheetFile 样式表文件
      */
-    @JvmStatic
     fun parseCssSelectorFormFile(stylesheetFile: StylesheetFile?): MutableMap<String, Array<CssSelector>> {
         if (stylesheetFile == null || PsiTreeUtil.hasErrorElements(stylesheetFile)) return mutableMapOf()
         if (contentMap.containsKey(stylesheetFile.text.length.toString())) return contentMap[stylesheetFile.text.length.toString()] ?: mutableMapOf()
