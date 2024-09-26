@@ -18,62 +18,6 @@
      </h3>
     ]]></description>
 
-    <change-notes><![CDATA[
-        <h2>0.0.11</h2>
-        <ul>
-            <li>temporary close SimpleDocumentationProvider function cause not test</li>
-            <li>add code test for parse css/scss</li>
-            <li>re-write plugin code use kotlin</li>
-        </ul>
-        <h2>0.0.10</h2>
-        <ul>
-            <li>fix fetal error : TypeScript type miss</li>
-            <li>add plugin icon</li>
-        </ul>
-        <h2>0.0.9</h2>
-        <ul>
-            <li> fix bug with Compatibility Verification  </li>
-        </ul>
-        <h2>0.0.8</h2>
-        <ul>
-            <li>support hover show documentation</li>
-            <li>support & selector with tag</li>
-        </ul>
-        <h2>0.0.7</h2>
-        <ul>
-            <li>support selector with tag</li>
-            <li>use intellij function deal with String and Container</li>
-        </ul>
-        <h2>0.0.6</h2>
-        <ul>
-        <li>
-            remove all pseudo class / element
-        </li>
-        </ul>
-        <h2>0.0.5</h2>
-        <ul>
-            <li>1. add some test case</li>
-            <li>2. remove unused import</li>
-            <li>3. support selector has SPACE</li>
-        </ul>
-        <h2>0.0.4</h2>
-            <ul>
-                <li>1. fix java compatibility problems</li>
-            </ul>
-         <h2>0.0.3</h2>
-          <ul>
-            <li>支持了较为复杂的 parents selector 情况</li>
-            <li>支持了选择器含有伪类的情况</li>
-          </ul>
-        <h2>0.0.2</h2>
-        <h3>New Feature</h3>
-        <ul>
-            <li>简单支持了scss & 选择器</li>
-            <li>支持跳转到 style 内部</li>
-            <li>支持逗号分隔的选择器</li>
-        </ul>
-]]></change-notes>
-
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
     <depends>JavaScript</depends>
