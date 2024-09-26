@@ -3,6 +3,7 @@ package com.example.ide.css
 import com.intellij.codeInsight.completion.*
 import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.patterns.PlatformPatterns
+import com.intellij.psi.presentation.java.SymbolPresentationUtil
 import com.intellij.util.ProcessingContext
 
 class CssModulesClassNameCompletionContributor : CompletionContributor() {
@@ -16,15 +17,15 @@ class CssModulesClassNameCompletionContributor : CompletionContributor() {
             context: ProcessingContext,
             resultSet: CompletionResultSet
         ) {
-            val completionElement = parameters.originalPosition ?: parameters.position
-            if (completionElement.parent is JSLiteralExpression) {
-                val literalExpression = completionElement.parent as JSLiteralExpression
-                getCssClassNamesImportOrRequireDeclaration(literalExpression)?.let { declaration ->
-                    resolveStyleSheetFile(declaration)?.let { styleSheetFile ->
-                        completionHelper(resultSet, styleSheetFile)
-                    }
-                }
+            val position = parameters.position ?: parameters.originalPosition
+            if (position?.parent !is JSLiteralExpression) return
+            val stylesheetFile = findReferenceStyleFile(position.parent as JSLiteralExpression) ?: return
+            val shortLocation = SymbolPresentationUtil.getFilePathPresentation(stylesheetFile)
+            val allSelector = restoreAllSelector(stylesheetFile)
+            val allLookupElement = allSelector.keys.map {
+                buildLookupElementHelper(name = it ,psiElement = allSelector[it]!! , location = shortLocation)
             }
+            resultSet.addAllElements(allLookupElement)
         }
     }
 }

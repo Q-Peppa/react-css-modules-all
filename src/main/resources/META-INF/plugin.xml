@@ -80,28 +80,19 @@
     <depends>com.intellij.css</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <!--  find reference -->
         <psi.referenceContributor implementation="com.example.ide.psi.CssModulesIndexedStylesVarPsiReferenceContributorKt"
-                                  language="ECMAScript 6"/>
-        <psi.referenceContributor implementation="com.example.ide.psi.CssModulesIndexedStylesVarPsiReferenceContributorKt"
-                                  language="TypeScript JSX"/>
-        <completion.contributor language="ECMAScript 6"
+                                  language="JavaScript"/>
+        <!-- supply completion  -->
+        <completion.contributor language="JavaScript"
                                 implementationClass="com.example.ide.css.CssModulesClassNameCompletionContributor"/>
-
-        <completion.contributor language="TypeScript JSX"
-                                implementationClass="com.example.ide.css.CssModulesClassNameCompletionContributor"/>
-
-        <lang.documentationProvider
-
-                implementationClass="com.example.ide.document.SimpleDocumentationProvider"
-                language="TypeScript JSX"/>
+        <!--   if not found reference ,  supply quick fix -->
+        <annotator language="JavaScript" implementationClass="com.example.ide.annotator.CssModulesClassAnnotator"/>
 
         <lang.documentationProvider
                 implementationClass="com.example.ide.document.SimpleDocumentationProvider"
-                language="ECMAScript 6"/>
-        <annotator language="TypeScript JSX" implementationClass="com.example.ide.annotator.CssModulesClassAnnotator"/>
-        <annotator language="ECMAScript 6" implementationClass="com.example.ide.annotator.CssModulesClassAnnotator"/>
+                language="JavaScript"/>
+
     </extensions>
-
-
 
 </idea-plugin>

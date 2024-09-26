@@ -1,24 +1,20 @@
 package com.example.ide.psi
 
 
-import com.example.ide.css.getCssClass
-import com.example.ide.css.getCssClassNamesImportOrRequireDeclaration
+import com.example.ide.css.findReferenceStyleFile
+import com.example.ide.css.restoreAllSelector
 import com.intellij.lang.javascript.JSTokenTypes
 import com.intellij.lang.javascript.psi.JSFile
 import com.intellij.lang.javascript.psi.JSIndexedPropertyAccessExpression
 import com.intellij.lang.javascript.psi.JSLiteralExpression
-import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.util.Ref
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.*
-import com.intellij.psi.css.StylesheetFile
 import com.intellij.psi.filters.ElementFilter
 import com.intellij.psi.filters.position.FilterPattern
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 import org.jetbrains.annotations.NotNull
 
-private val LOG = logger<CssModuleReferenceProvider>()
 
 class CssModuleReferenceProvider : PsiReferenceProvider() {
 
@@ -29,26 +25,12 @@ class CssModuleReferenceProvider : PsiReferenceProvider() {
         if (element !is JSLiteralExpression) return PsiReference.EMPTY_ARRAY
         val name = element.stringValue?.trim().orEmpty()
         if (name.isBlank()) return PsiReference.EMPTY_ARRAY
+        val styleFile = findReferenceStyleFile(element) ?: return  PsiReference.EMPTY_ARRAY
+        val map = restoreAllSelector(styleFile)
+        return if (map.containsKey(name)) arrayOf(object :PsiReferenceBase<PsiElement>(element){
+            override fun resolve(): PsiElement? = map[name]
+        }) else arrayOf(CssModulesUnknownClassPsiReference(element , styleFile))
 
-        val cssClassNamesImportOrRequire = getCssClassNamesImportOrRequireDeclaration(element)
-            ?: return PsiReference.EMPTY_ARRAY
-
-        val referencedStyleSheet = Ref<StylesheetFile>()
-        val cssClass = getCssClass(cssClassNamesImportOrRequire, name, referencedStyleSheet)
-        
-        return cssClass?.let {
-            arrayOf(object : PsiReferenceBase<PsiElement>(element) {
-                override fun resolve(): PsiElement = it
-                override fun getVariants(): Array<Any> = arrayOf()
-            })
-        } ?: referencedStyleSheet.get()?.let {
-            try {
-                arrayOf(CssModulesUnknownClassPsiReference(element, it))
-            } catch (e: Exception) {
-                LOG.warn("CssModulesUnknownClassPsiReference cause error $e")
-                PsiReference.EMPTY_ARRAY
-            }
-        } ?: PsiReference.EMPTY_ARRAY
     }
 }
 
