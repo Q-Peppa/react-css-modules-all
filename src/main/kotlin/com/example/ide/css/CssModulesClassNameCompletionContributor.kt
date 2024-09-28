@@ -23,7 +23,7 @@ class CssModulesClassNameCompletionContributor : CompletionContributor() {
             val shortLocation = SymbolPresentationUtil.getFilePathPresentation(stylesheetFile)
             val allSelector = restoreAllSelector(stylesheetFile)
             val allLookupElement = allSelector.keys.map {
-                buildLookupElementHelper(name = it , css = allSelector[it]!! , location = shortLocation)
+                buildLookupElementHelper(it , allSelector[it]!! , shortLocation)
             }
             resultSet.addAllElements(allLookupElement)
         }
