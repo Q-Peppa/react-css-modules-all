@@ -1,0 +1,29 @@
+package com.example.ide.document
+
+import com.intellij.lang.documentation.AbstractDocumentationProvider
+import com.intellij.lang.javascript.psi.JSLiteralExpression
+import com.intellij.psi.PsiElement
+import com.intellij.psi.css.CssRuleset
+
+class SimpleDocumentationProvider : AbstractDocumentationProvider()  {
+
+
+    private fun renderDoc(cssRuleset: CssRuleset): String {
+        val code = StringBuilder()
+        cssRuleset.block?.declarations.let {
+            it?.forEach { de-> code.appendLine(de.text) }
+        }
+        return "<pre><code>$code</code></pre>"
+    }
+
+    override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {
+        if (element == null || originalElement == null) return null
+        val origin = super.generateDoc(element, originalElement)
+        // Check if the element is a CssRuleset and the originalElement is a JSLiteralExpression
+        if (element is CssRuleset && originalElement.parent is JSLiteralExpression) {
+            return renderDoc(element)
+        }
+        return origin
+    }
+
+}
