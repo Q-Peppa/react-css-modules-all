@@ -2,17 +2,17 @@
 
 ## [Unreleased]
 
-## [0.0.11] - 2024-09-22
-
-- temporary close SimpleDocumentationProvider function cause not test
-- add code test for parse css/scss
-- re-write plugin code use kotlin
-
 ## [0.0.12] - 2024-9-27
 
 - use system function parse css
 - re-write test file
 - plugin.xml extensions simplify
+
+## [0.0.11] - 2024-09-22
+
+- temporary close SimpleDocumentationProvider function cause not test
+- add code test for parse css/scss
+- re-write plugin code use kotlin
 
 ## [0.0.10] - 2024-09-19
 
@@ -69,9 +69,9 @@
 - support a little complex parents selector
 - support css selector has pseudo
 
-[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.11...HEAD
-[0.0.12]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.10...v0.0.12
-[0.0.11]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.12...v0.0.11
+[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.12...HEAD
+[0.0.12]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.11...v0.0.12
+[0.0.11]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.10...v0.0.11
 [0.0.10]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.9...v0.0.10
 [0.0.9]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.8...v0.0.9
 [0.0.8]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.7...v0.0.8
