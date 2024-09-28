@@ -30,7 +30,6 @@ class CssModuleReferenceProvider : PsiReferenceProvider() {
         return if (map.containsKey(name)) arrayOf(object :PsiReferenceBase<PsiElement>(element){
             override fun resolve(): PsiElement? = map[name]
         }) else arrayOf(CssModulesUnknownClassPsiReference(element , styleFile))
-
     }
 }
 

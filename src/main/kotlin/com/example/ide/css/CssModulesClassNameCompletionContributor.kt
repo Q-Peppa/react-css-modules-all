@@ -17,13 +17,13 @@ class CssModulesClassNameCompletionContributor : CompletionContributor() {
             context: ProcessingContext,
             resultSet: CompletionResultSet
         ) {
-            val position = parameters.position ?: parameters.originalPosition
-            if (position?.parent !is JSLiteralExpression) return
+            val position = parameters.position
+            if (position.parent !is JSLiteralExpression) return
             val stylesheetFile = findReferenceStyleFile(position.parent as JSLiteralExpression) ?: return
             val shortLocation = SymbolPresentationUtil.getFilePathPresentation(stylesheetFile)
             val allSelector = restoreAllSelector(stylesheetFile)
             val allLookupElement = allSelector.keys.map {
-                buildLookupElementHelper(name = it ,psiElement = allSelector[it]!! , location = shortLocation)
+                buildLookupElementHelper(name = it , css = allSelector[it]!! , location = shortLocation)
             }
             resultSet.addAllElements(allLookupElement)
         }

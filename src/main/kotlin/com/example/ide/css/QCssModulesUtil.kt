@@ -7,15 +7,21 @@ import com.intellij.icons.AllIcons
 import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.lang.javascript.psi.JSReferenceExpression
 import com.intellij.lang.javascript.psi.resolve.JSResolveUtil
+import com.intellij.openapi.util.text.Strings
 import com.intellij.psi.PsiElement
+import com.intellij.psi.css.CssClass
+import com.intellij.psi.css.CssElement
 import com.intellij.psi.css.CssRuleset
+import com.intellij.psi.css.CssSelector
 import com.intellij.psi.css.CssSelectorList
 import com.intellij.psi.css.CssSelectorSuffixType
 import com.intellij.psi.css.StylesheetFile
 import com.intellij.psi.css.impl.CssEscapeUtil
 import com.intellij.psi.css.impl.stubs.index.CssIndexUtil
+import com.intellij.psi.css.impl.util.CssUtil
 import com.intellij.psi.css.util.CssCompletionUtil
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.util.PsiTreeUtil
 
 
 private val projectName = QCssMessageBundle.message("projectName")
@@ -23,21 +29,24 @@ private val projectName = QCssMessageBundle.message("projectName")
 private fun inTheGlobal(name: String):Boolean{
     return name.contains(":global")
 }
-
+private fun recessivesClassInCssSelector(realSelector: CssSelector , cssSelector: CssSelector, map:  MutableMap<String , PsiElement>): Boolean {
+    for (clazz in PsiTreeUtil.findChildrenOfType(cssSelector, CssClass::class.java)) {
+        if (Strings.isEmpty(clazz.name)) continue
+        map[clazz.name!!] = realSelector.ruleset!!
+    }
+    return true
+}
 /**
  * return all available css className in file map , foo-> some ruleset
  */
-fun restoreAllSelector(stylesheetFile: StylesheetFile):Map<String , CssRuleset>{
-    val of = mutableMapOf<String, CssRuleset>()
+fun restoreAllSelector(stylesheetFile: StylesheetFile):Map<String , PsiElement>{
+    val of = mutableMapOf<String, PsiElement>()
     val scope = GlobalSearchScope.fileScope(stylesheetFile.project , stylesheetFile.virtualFile)
     CssIndexUtil.processAmpersandSelectors(stylesheetFile.project , scope) {
+        // realSelector in file , afterResolve is dummy file, can't find resolve and lineNumber
         val realSelector = it
         it.processAmpersandEvaluatedSelectors { afterResolve ->
-            val name = if (afterResolve.presentableText.startsWith(".")) afterResolve.presentableText.drop(1) else afterResolve.presentableText
-            if (!inTheGlobal(name))   {
-                of[name] = realSelector.ruleset!!
-            }
-            true
+            recessivesClassInCssSelector(realSelector ,afterResolve , of)
         }
         true
     }
@@ -52,17 +61,16 @@ fun restoreAllSelector(stylesheetFile: StylesheetFile):Map<String , CssRuleset>{
  * the number more big , the completion lookup more up
  */
 
-fun buildLookupElementHelper(name: String , psiElement: PsiElement? , location:String):LookupElementBuilder{
-   val lookupString =  CssEscapeUtil.escapeSpecialCssChars(name)
-    val cssSelectorList = psiElement?.firstChild as CssSelectorList
-    val smartPointer = LookupElementBuilder.createWithSmartPointer(lookupString, psiElement)
-    val ele = smartPointer
+fun buildLookupElementHelper(name: String , css: PsiElement , location:String):LookupElementBuilder{
+    val lookupString =  CssEscapeUtil.escapeSpecialCssChars(name)
+    val lineNumber =  (css as CssRuleset).selectors.first().lineNumber
+    val ele = LookupElementBuilder.createWithSmartPointer(lookupString, css)
         .bold()
-        .withPsiElement(psiElement)
+        .withPsiElement(css)
         .withIcon(AllIcons.Xml.Css_class)
         .withPresentableText(name)
         .withCaseSensitivity(true)
-        .withTypeText("$location:${cssSelectorList.selectors.first()?.lineNumber} $projectName" , true)
+        .withTypeText("$location:$lineNumber $projectName" , true)
     PrioritizedLookupElement.withPriority(ele ,CssCompletionUtil.CSS_SELECTOR_SUFFIX_PRIORITY.toDouble() )
     return ele
 }

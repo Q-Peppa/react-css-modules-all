@@ -24,6 +24,10 @@
     <depends>com.intellij.css</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <lang.documentationProvider
+                order="last"
+                implementationClass="com.example.ide.document.SimpleDocumentationProvider"
+                language="JavaScript"/>
         <!--  find reference -->
         <psi.referenceContributor implementation="com.example.ide.psi.CssModulesIndexedStylesVarPsiReferenceContributorKt"
                                   language="JavaScript"/>
@@ -32,11 +36,5 @@
                                 implementationClass="com.example.ide.css.CssModulesClassNameCompletionContributor"/>
         <!--   if not found reference ,  supply quick fix -->
         <annotator language="JavaScript" implementationClass="com.example.ide.annotator.CssModulesClassAnnotator"/>
-
-        <lang.documentationProvider
-                implementationClass="com.example.ide.document.SimpleDocumentationProvider"
-                language="JavaScript"/>
-
     </extensions>
-
 </idea-plugin>
