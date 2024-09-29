@@ -34,5 +34,6 @@ class SimpleCssSelectorFix(private val key: String, private val stylesheetFile: 
                 it.editor.caretModel.moveToOffset(offset)
             }
         }
+        file.subtreeChanged()
     }
 }

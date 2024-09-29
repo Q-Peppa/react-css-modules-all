@@ -1,6 +1,5 @@
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.changelog.Changelog
-import org.jetbrains.kotlin.ir.backend.jvm.jvmLibrariesProvidedByDefault
 
 plugins {
     id("java") // Java support
@@ -13,16 +12,15 @@ plugins {
 group = providers.gradleProperty("pluginGroup").get()
 version = providers.gradleProperty("pluginVersion").get()
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-}
 
 kotlin {
-   jvmToolchain(17)
+    jvmToolchain {
+        languageVersion  = JavaLanguageVersion.of(17)
+        vendor = JvmVendorSpec.JETBRAINS
+    }
 }
 
 repositories {
-    mavenCentral()
     maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
     maven("https://www.jetbrains.com/intellij-repository/snapshots")
     maven("https://packages.jetbrains.team/maven/p/grazi/grazie-platform-public")
@@ -45,13 +43,11 @@ repositories {
 
 
 dependencies {
-    implementation("org.opentest4j:opentest4j:1.3.0")
     testImplementation(libs.junit)
     intellijPlatform {
         webstorm("2024.2")
         bundledPlugin("JavaScript")
         instrumentationTools()
-        bundledPlugin("org.jetbrains.plugins.sass")
         testFramework(TestFrameworkType.Platform)
     }
 }

@@ -6,14 +6,13 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.css.CssRuleset
 
 class SimpleDocumentationProvider : AbstractDocumentationProvider()  {
-
-
-    private fun renderDoc(cssRuleset: CssRuleset): String {
+    private fun renderDoc(cssRuleset: CssRuleset): String? {
         val code = StringBuilder()
+        if (cssRuleset.block?.declarations?.isEmpty() == true) return null;
         cssRuleset.block?.declarations.let {
             it?.forEach { de-> code.appendLine(de.text) }
         }
-        return "<pre><code>$code</code></pre>"
+        return "<pre><code>${code.toString().trimIndent()}</code></pre>"
     }
 
     override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {
