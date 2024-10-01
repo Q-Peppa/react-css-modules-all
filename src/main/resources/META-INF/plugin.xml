@@ -3,7 +3,6 @@
     <id>react.css.module.all</id>
     <name>React Css Modules All</name>
     <vendor>Peppa</vendor>
-    <version>0.0.12</version>
     <resource-bundle>messages.MyBundle</resource-bundle>
     <description><![CDATA[
      <h1>React-Css-Module-All</h1>
@@ -25,7 +24,6 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <lang.documentationProvider
-                order="last"
                 implementationClass="com.example.ide.document.SimpleDocumentationProvider"
                 language="JavaScript"/>
         <!--  find reference -->

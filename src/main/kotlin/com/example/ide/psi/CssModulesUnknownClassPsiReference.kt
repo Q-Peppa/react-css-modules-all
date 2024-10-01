@@ -1,6 +1,7 @@
 package com.example.ide.psi
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiReference
 import com.intellij.psi.PsiReferenceBase
 import com.intellij.psi.css.StylesheetFile
 
@@ -9,7 +10,5 @@ class CssModulesUnknownClassPsiReference(
     val stylesheetFile: StylesheetFile
 ) :
     PsiReferenceBase<PsiElement?>(element) {
-    // pointer themselves
-    override fun resolve(): PsiElement = this.element
-    override fun getVariants(): Array<Any> = arrayOf(0)
+    override fun resolve(): PsiElement = element
 }

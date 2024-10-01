@@ -1,6 +1,10 @@
 # react-css-modules-all
 
-support css module in react code completion
+![Downloads](https://img.shields.io/jetbrains/plugin/d/react.css.module.all)
+![Rating](https://img.shields.io/jetbrains/plugin/r/rating/react.css.module.all)
+![Version](https://img.shields.io/jetbrains/plugin/v/react.css.module.all)
+
+support css module in react code completion, navigation, quick documentation.
 
 ### Origin
 - fork by https://github.com/jimkyndemeyer/react-css-modules-intellij-plugin/tree/master
@@ -21,9 +25,9 @@ case it will be transformed css name case to camelCase
 ### What's These Plugins Do? 
 
 1. parse css name but not transform case .
-2. support parents selector( & ) in scss file .
-3. support click classname link to css file.
-4. auto remove some classname in `:global` tag, because it's global style.
+2. support parents selector( & ) in scss/less file .
+3. support navigation for hyphen to class.
+4. auto remove some class name in `:global` tag, because it's global style.
 
 ### What's These Plugins Can't Do?
 
@@ -44,5 +48,4 @@ This plugin not guaranteed all function work
 
 ### Already Issue
 
-1. can't identify .foo > &-bar#id , "&-bar#id" with another id selector'
-2. com.example.ide.css.QCssModuleParseUtil.parseCssSelectorFormFile use too long time and may cause StandaloneCoroutine error
+- has no any already issue
