@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [1.0.1] - 2024-10-10
+
+- fix bug will case psi not work
+- not call subtreeChanged, UI cost very expensive
+- add getQuickNavigateInfo to polyfill mouse left info
+
 ## [1.0.0] - 2024-10-01
 
 - fix bug not show completion when first active
@@ -74,7 +80,9 @@
 - support a little complex parents selector
 - support css selector has pseudo
 
-[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.1...HEAD
+
+[1.0.1]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.12...v1.0.0
 [0.0.12]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.11...v0.0.12
 [0.0.11]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.10...v0.0.11

@@ -25,29 +25,30 @@ class CssModuleReferenceProvider : PsiReferenceProvider() {
         if (element !is JSLiteralExpression) return PsiReference.EMPTY_ARRAY
         val name = element.stringValue?.trim().orEmpty()
         if (name.isBlank()) return PsiReference.EMPTY_ARRAY
-        val styleFile = findReferenceStyleFile(element) ?: return  PsiReference.EMPTY_ARRAY
+        val styleFile = findReferenceStyleFile(element) ?: return PsiReference.EMPTY_ARRAY
         val map = restoreAllSelector(styleFile)
-        return if (map.containsKey(name)) arrayOf(object :PsiReferenceBase<PsiElement>(element){
+        return if (map.containsKey(name)) arrayOf(object : PsiReferenceBase<PsiElement>(element) {
             override fun resolve(): PsiElement? = map[name]
-        }) else arrayOf(CssModulesUnknownClassPsiReference(element , styleFile))
+        }) else arrayOf(CssModulesUnknownClassPsiReference(element, styleFile))
     }
 }
 
-val CLASS_NAME_FILTER = PlatformPatterns.psiElement(JSLiteralExpression::class.java).and(FilterPattern(
-    object : ElementFilter {
-        override fun isAcceptable(element: Any?, context: PsiElement?): Boolean {
-            return element is JSLiteralExpression
-                    && context != null
-                    && context.containingFile is JSFile
-                    && isStyleIndex(element)
-                    && element.node.firstChildNode?.elementType == JSTokenTypes.STRING_LITERAL
-        }
+val CLASS_NAME_FILTER = PlatformPatterns.psiElement(JSLiteralExpression::class.java).and(
+    FilterPattern(
+        object : ElementFilter {
+            override fun isAcceptable(element: Any?, context: PsiElement?): Boolean {
+                return element is JSLiteralExpression
+                        && context != null
+                        && context.containingFile is JSFile
+                        && isStyleIndex(element)
+                        && element.node.firstChildNode?.elementType == JSTokenTypes.STRING_LITERAL
+            }
 
-        override fun isClassAcceptable(hintClass: Class<*>?): Boolean {
-            return JSLiteralExpression::class.java.isAssignableFrom(hintClass!!)
+            override fun isClassAcceptable(hintClass: Class<*>?): Boolean {
+                return JSLiteralExpression::class.java.isAssignableFrom(hintClass!!)
+            }
         }
-    }
-))
+    ))
 
 class CssModulesIndexedStylesVarPsiReferenceContributorKt : PsiReferenceContributor() {
     override fun registerReferenceProviders(@NotNull registrar: PsiReferenceRegistrar) {
@@ -57,5 +58,5 @@ class CssModulesIndexedStylesVarPsiReferenceContributorKt : PsiReferenceContribu
     }
 }
 
-fun isStyleIndex(element: JSLiteralExpression): Boolean = 
+fun isStyleIndex(element: JSLiteralExpression): Boolean =
     PsiTreeUtil.getParentOfType(element, JSIndexedPropertyAccessExpression::class.java) != null

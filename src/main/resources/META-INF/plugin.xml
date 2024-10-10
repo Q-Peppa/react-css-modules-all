@@ -6,7 +6,7 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
     <description><![CDATA[
      <h1>React-Css-Module-All</h1>
-     <h2>support css modules in project and not transform css case to camelCase</h4>
+     <h2>support Css Modules in project and not transform css case to CamelCase</h4>
      <h3>
           <ul>
              <li>auto-detected css module class name add completion</li>

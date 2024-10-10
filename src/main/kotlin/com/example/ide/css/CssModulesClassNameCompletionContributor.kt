@@ -11,7 +11,8 @@ class CssModulesClassNameCompletionContributor : CompletionContributor() {
     init {
         extend(CompletionType.BASIC, PlatformPatterns.psiElement(), CssModulesClassNameCompletionContributorProvider())
     }
-    private  class CssModulesClassNameCompletionContributorProvider: CompletionProvider<CompletionParameters>() {
+
+    private class CssModulesClassNameCompletionContributorProvider : CompletionProvider<CompletionParameters>() {
         override fun addCompletions(
             parameters: CompletionParameters,
             context: ProcessingContext,
@@ -23,7 +24,7 @@ class CssModulesClassNameCompletionContributor : CompletionContributor() {
             val shortLocation = SymbolPresentationUtil.getFilePathPresentation(stylesheetFile)
             val allSelector = restoreAllSelector(stylesheetFile)
             val allLookupElement = allSelector.keys.map {
-                buildLookupElementHelper(it , allSelector[it]!! , shortLocation)
+                buildLookupElementHelper(it, allSelector[it]!!, shortLocation)
             }
             resultSet.addAllElements(allLookupElement)
         }
