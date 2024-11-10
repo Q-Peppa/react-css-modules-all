@@ -8,6 +8,10 @@
 - not call subtreeChanged, UI cost very expensive
 - add getQuickNavigateInfo to polyfill mouse left info
 
+## [1.0.2] - 2024-11-10
+
+- update version number for jetbarins 2024.3
+
 ## [1.0.0] - 2024-10-01
 
 - fix bug not show completion when first active
@@ -81,8 +85,8 @@
 - support css selector has pseudo
 
 [Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.1...HEAD
-
-[1.0.1]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.0...v1.0.1
+[1.0.2]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.0...v1.0.2
+[1.0.1]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.2...v1.0.1
 [1.0.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.12...v1.0.0
 [0.0.12]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.11...v0.0.12
 [0.0.11]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.10...v0.0.11
