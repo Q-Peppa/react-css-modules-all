@@ -11,7 +11,6 @@ import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.*
 import com.intellij.psi.filters.ElementFilter
 import com.intellij.psi.filters.position.FilterPattern
-import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 import org.jetbrains.annotations.NotNull
 
@@ -38,6 +37,7 @@ val CLASS_NAME_FILTER = PlatformPatterns.psiElement(JSLiteralExpression::class.j
         object : ElementFilter {
             override fun isAcceptable(element: Any?, context: PsiElement?): Boolean {
                 return element is JSLiteralExpression
+                        && element.parent is JSIndexedPropertyAccessExpression
                         && context != null
                         && context.containingFile is JSFile
                         && isStyleIndex(element)
@@ -58,5 +58,7 @@ class CssModulesIndexedStylesVarPsiReferenceContributorKt : PsiReferenceContribu
     }
 }
 
-fun isStyleIndex(element: JSLiteralExpression): Boolean =
-    PsiTreeUtil.getParentOfType(element, JSIndexedPropertyAccessExpression::class.java) != null
+fun isStyleIndex(element: JSLiteralExpression): Boolean = findReferenceStyleFile(element) !== null
+
+
+

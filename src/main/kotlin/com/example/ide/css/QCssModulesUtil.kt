@@ -88,6 +88,7 @@ fun findReferenceStyleFile(innerStringIndexPsiElement: JSLiteralExpression?): St
         // in some case(i don't kown why) JSResolveUtil.getElementJSType will return any , so there is polyfill;
         val element = callKey.reference?.resolve() // will return import foo from  "bar"
         if (element !is ES6ImportedBinding) return null
+        if (element.findReferencedElements().isEmpty()) return null
         val first = element.findReferencedElements().first()
         return if (first is StylesheetFile) first else null
     }

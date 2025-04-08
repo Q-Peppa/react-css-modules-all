@@ -1,6 +1,7 @@
 package com.example.ide.css
 
 import com.intellij.codeInsight.completion.*
+import com.intellij.lang.javascript.psi.JSIndexedPropertyAccessExpression
 import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.presentation.java.SymbolPresentationUtil
@@ -19,7 +20,10 @@ class CssModulesClassNameCompletionContributor : CompletionContributor() {
             resultSet: CompletionResultSet
         ) {
             val position = parameters.position
+            // ["$1"]
             if (position.parent !is JSLiteralExpression) return
+            // styles["$1"]
+            if (position.parent.parent !is JSIndexedPropertyAccessExpression) return
             val stylesheetFile = findReferenceStyleFile(position.parent as JSLiteralExpression) ?: return
             val shortLocation = SymbolPresentationUtil.getFilePathPresentation(stylesheetFile)
             val allSelector = restoreAllSelector(stylesheetFile)

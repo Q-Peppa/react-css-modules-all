@@ -41,11 +41,3 @@ case it will be transformed css name case to camelCase
 ![3.jpg](src%2Fmain%2Fresources%2Fpic%2F3.jpg)
 ![4.jpg](src%2Fmain%2Fresources%2Fpic%2F4.png)
 ![5.jpg](src%2Fmain%2Fresources%2Fpic%2F5.png)
-
-### Statement
-
-This plugin not guaranteed all function work
-
-### Already Issue
-
-- has no any already issue

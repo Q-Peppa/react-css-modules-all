@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.0.3] - 2025-04-08
+
+- fix: fix some error completion not in JSIndexedPropertyAccessExpression
+
 ## [1.0.1] - 2024-10-10
 
 - fix bug will case psi not work
@@ -84,7 +88,9 @@
 - support a little complex parents selector
 - support css selector has pseudo
 
-[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.3...HEAD
+
+[1.0.3]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.1...v1.0.3
 [1.0.2]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.0...v1.0.2
 [1.0.1]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.2...v1.0.1
 [1.0.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.12...v1.0.0
