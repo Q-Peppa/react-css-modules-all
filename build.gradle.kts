@@ -3,7 +3,7 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
     id("java") // Java support
-    alias(libs.plugins.kotlin) // Kotlin support
+    alias(libs.plugins.kotlin) version "2.1.20" // Kotlin support
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
     alias(libs.plugins.intelliJPlatform) // IntelliJ Platform Gradle Plugin
 }
@@ -12,33 +12,18 @@ plugins {
 group = providers.gradleProperty("pluginGroup").get()
 version = providers.gradleProperty("pluginVersion").get()
 
-
-kotlin {
-    jvmToolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-        vendor = JvmVendorSpec.JETBRAINS
+tasks {
+    withType<JavaCompile> {
+        sourceCompatibility = "21"
+        targetCompatibility = "21"
     }
 }
 
 repositories {
-    maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
-    maven("https://www.jetbrains.com/intellij-repository/snapshots")
-    maven("https://packages.jetbrains.team/maven/p/grazi/grazie-platform-public")
-    maven("https://download.jetbrains.com/teamcity-repository")
-    maven { setUrl("https://maven.aliyun.com/repository/central") }
-    maven { setUrl("https://maven.aliyun.com/repository/jcenter") }
-    maven { setUrl("https://maven.aliyun.com/repository/google") }
-    maven { setUrl("https://maven.aliyun.com/repository/gradle-plugin") }
-    maven { setUrl("https://maven.aliyun.com/repository/public") }
-    maven { setUrl("https://jitpack.io") }
-    maven { setUrl("https://maven.aliyun.com/nexus/content/groups/public/") }
-    maven { setUrl("https://maven.aliyun.com/nexus/content/repositories/jcenter") }
-    google()
     mavenCentral()
     intellijPlatform {
         defaultRepositories()
     }
-    gradlePluginPortal()
 }
 
 

@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-04-09
+
+- break: improve platformVersion >= 2024.02
+- break: improve jdk to 21 and kotlin to 2.1.20
+- simplify: simplify build.config.kts
+- performance: improve performance by find styleFile
+- remove: remove unused import and code
+- prettier: show quick doc prettier
+
 ## [1.0.3] - 2025-04-08
 
 - fix: fix some error completion not in JSIndexedPropertyAccessExpression
@@ -88,8 +97,9 @@
 - support a little complex parents selector
 - support css selector has pseudo
 
-[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.3...HEAD
+[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.1.0...HEAD
 
+[1.1.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.3...v1.1.0
 [1.0.3]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.1...v1.0.3
 [1.0.2]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.0...v1.0.2
 [1.0.1]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.2...v1.0.1

@@ -1,13 +1,11 @@
 package com.example.ide.css
 
-import com.example.ide.message.QCssMessageBundle
 import com.intellij.codeInsight.completion.PrioritizedLookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.icons.AllIcons
 import com.intellij.lang.ecmascript6.psi.ES6ImportedBinding
 import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.lang.javascript.psi.JSReferenceExpression
-import com.intellij.lang.javascript.psi.resolve.JSResolveUtil
 import com.intellij.openapi.util.text.Strings
 import com.intellij.psi.PsiElement
 import com.intellij.psi.css.*
@@ -16,13 +14,6 @@ import com.intellij.psi.css.impl.stubs.index.CssIndexUtil
 import com.intellij.psi.css.util.CssCompletionUtil
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
-
-
-private val projectName = QCssMessageBundle.message("projectName")
-
-private fun inTheGlobal(name: String): Boolean {
-    return name.contains(":global")
-}
 
 private fun recessivesClassInCssSelector(
     realSelector: CssSelector,
@@ -39,7 +30,7 @@ private fun recessivesClassInCssSelector(
 /**
  * return all available css className in file map , foo-> some ruleset
  */
-fun restoreAllSelector(stylesheetFile: StylesheetFile): Map<String, PsiElement> {
+fun restoreAllSelector(stylesheetFile: StylesheetFile): MutableMap<String, PsiElement> {
     val of = mutableMapOf<String, PsiElement>()
     val scope = GlobalSearchScope.fileScope(stylesheetFile.project, stylesheetFile.virtualFile)
     CssIndexUtil.processAmpersandSelectors(stylesheetFile.project, scope) {
@@ -60,7 +51,7 @@ fun restoreAllSelector(stylesheetFile: StylesheetFile): Map<String, PsiElement> 
 /**
  * the number more big , the completion lookup more up
  */
-
+const val SpaceSize = 2
 fun buildLookupElementHelper(name: String, css: PsiElement, location: String): LookupElementBuilder {
     val lookupString = CssEscapeUtil.escapeSpecialCssChars(name)
     val lineNumber = (css as CssRuleset).selectors.first().lineNumber
@@ -70,7 +61,7 @@ fun buildLookupElementHelper(name: String, css: PsiElement, location: String): L
         .withIcon(AllIcons.Xml.Css_class)
         .withPresentableText(name)
         .withCaseSensitivity(true)
-        .withTypeText("$location:$lineNumber $projectName", true)
+        .withTailText(" ".repeat(SpaceSize) + "($location:$lineNumber)", true)
     PrioritizedLookupElement.withPriority(ele, CssCompletionUtil.CSS_SELECTOR_SUFFIX_PRIORITY.toDouble())
     return ele
 }
@@ -81,16 +72,10 @@ fun buildLookupElementHelper(name: String, css: PsiElement, location: String): L
  */
 fun findReferenceStyleFile(innerStringIndexPsiElement: JSLiteralExpression?): StylesheetFile? {
     if (innerStringIndexPsiElement == null) return null
-    val callKey = innerStringIndexPsiElement.parent?.firstChild
+    val callKey = innerStringIndexPsiElement.parent?.firstChild // by style["$1"] get styles
     if (callKey !is JSReferenceExpression) return null
-    val stylesheetFile = JSResolveUtil.getElementJSType(callKey)?.substitute()?.sourceElement
-    if (stylesheetFile !is StylesheetFile) {
-        // in some case(i don't kown why) JSResolveUtil.getElementJSType will return any , so there is polyfill;
-        val element = callKey.reference?.resolve() // will return import foo from  "bar"
-        if (element !is ES6ImportedBinding) return null
-        if (element.findReferencedElements().isEmpty()) return null
-        val first = element.findReferencedElements().first()
-        return if (first is StylesheetFile) first else null
-    }
-    return stylesheetFile
+    val element = callKey.reference?.resolve() // will return import foo from  "bar"
+    if (element !is ES6ImportedBinding || element.findReferencedElements().isEmpty()) return null
+    val first = element.findReferencedElements().first()
+    return if (first is StylesheetFile) first else null
 }

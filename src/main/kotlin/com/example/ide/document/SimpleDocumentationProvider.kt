@@ -1,22 +1,22 @@
 package com.example.ide.document
 
+import com.intellij.lang.css.CSSLanguage
 import com.intellij.lang.documentation.AbstractDocumentationProvider
+import com.intellij.lang.documentation.QuickDocHighlightingHelper.appendStyledCodeBlock
 import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.psi.PsiElement
 import com.intellij.psi.css.CssRuleset
 
 class SimpleDocumentationProvider : AbstractDocumentationProvider() {
-    private fun renderDoc(cssRuleset: CssRuleset): String? {
-        val code = StringBuilder()
-        if (cssRuleset.block?.declarations?.isEmpty() == true) return null;
-        cssRuleset.block?.declarations.let {
-            it?.forEach { de -> code.appendLine(de.text) }
-        }
-        return "<pre><code>${code.toString().trimIndent()}</code></pre>"
+    private fun renderDoc(cssRuleset: CssRuleset): String {
+        return StringBuilder()
+            .appendStyledCodeBlock(cssRuleset.project, CSSLanguage.INSTANCE, "  " + cssRuleset.text.trimIndent())
+            .toString()
     }
 
     override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {
         if (element == null || originalElement == null) return null
+
         val origin = super.generateDoc(element, originalElement)
         // Check if the element is a CssRuleset and the originalElement is a JSLiteralExpression
         if (element is CssRuleset && originalElement.parent is JSLiteralExpression) {
