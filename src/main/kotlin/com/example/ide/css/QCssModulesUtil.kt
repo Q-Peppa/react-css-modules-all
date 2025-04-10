@@ -12,8 +12,10 @@ import com.intellij.psi.css.*
 import com.intellij.psi.css.impl.CssEscapeUtil
 import com.intellij.psi.css.impl.stubs.index.CssIndexUtil
 import com.intellij.psi.css.util.CssCompletionUtil
+import com.intellij.psi.presentation.java.SymbolPresentationUtil
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.util.PathUtil
 
 private fun recessivesClassInCssSelector(
     realSelector: CssSelector,
@@ -48,20 +50,26 @@ fun restoreAllSelector(stylesheetFile: StylesheetFile): MutableMap<String, PsiEl
     return of
 }
 
-/**
- * the number more big , the completion lookup more up
- */
+
 const val SpaceSize = 2
-fun buildLookupElementHelper(name: String, css: PsiElement, location: String): LookupElementBuilder {
+fun buildLookupElementHelper(
+    name: String,
+    css: PsiElement,
+    location: String,
+    isNeedWrapByChar: Boolean = false
+): LookupElementBuilder {
     val lookupString = CssEscapeUtil.escapeSpecialCssChars(name)
     val lineNumber = (css as CssRuleset).selectors.first().lineNumber
-    val ele = LookupElementBuilder.createWithSmartPointer(lookupString, css)
+    val lookup = if (isNeedWrapByChar) "'$lookupString'" else lookupString
+    val ele = LookupElementBuilder.createWithSmartPointer(lookup, css)
         .bold()
         .withPsiElement(css)
         .withIcon(AllIcons.Xml.Css_class)
-        .withPresentableText(name)
+        //  the PresentableText will be wrap by ' ' if name has - ;
+        .withPresentableText(lookup)
         .withCaseSensitivity(true)
         .withTailText(" ".repeat(SpaceSize) + "($location:$lineNumber)", true)
+
     PrioritizedLookupElement.withPriority(ele, CssCompletionUtil.CSS_SELECTOR_SUFFIX_PRIORITY.toDouble())
     return ele
 }
@@ -77,5 +85,18 @@ fun findReferenceStyleFile(innerStringIndexPsiElement: JSLiteralExpression?): St
     val element = callKey.reference?.resolve() // will return import foo from  "bar"
     if (element !is ES6ImportedBinding || element.findReferencedElements().isEmpty()) return null
     val first = element.findReferencedElements().first()
-    return if (first is StylesheetFile) first else null
+    return first as? StylesheetFile
+}
+
+fun generateLookupElementList(
+    stylesheetFile: StylesheetFile,
+    isDotCompletion: Boolean = false
+): List<LookupElementBuilder> {
+    val shortLocation =
+        PathUtil.toSystemIndependentName(SymbolPresentationUtil.getFilePathPresentation(stylesheetFile))
+    val allSelector = restoreAllSelector(stylesheetFile)
+    val allLookupElement = allSelector.entries.map {
+        buildLookupElementHelper(it.key, it.value, shortLocation, isDotCompletion && it.key.contains("-"))
+    }
+    return allLookupElement
 }

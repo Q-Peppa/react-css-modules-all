@@ -1,7 +1,6 @@
 package com.example.ide.psi
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiReference
 import com.intellij.psi.PsiReferenceBase
 import com.intellij.psi.css.StylesheetFile
 

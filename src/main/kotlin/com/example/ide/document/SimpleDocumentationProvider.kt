@@ -7,10 +7,20 @@ import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.psi.PsiElement
 import com.intellij.psi.css.CssRuleset
 
+fun String.replaceLast(target: String, replacement: String): String {
+    val index = this.lastIndexOf(target)
+    return if (index != -1) {
+        this.substring(0, index) + replacement + this.substring(index + target.length)
+    } else {
+        this // 如果没有找到匹配项，返回原字符串
+    }
+}
+
 class SimpleDocumentationProvider : AbstractDocumentationProvider() {
     private fun renderDoc(cssRuleset: CssRuleset): String {
+        val text = cssRuleset.text.trimIndent().replaceLast("}", "").trim() + "\n}"
         return StringBuilder()
-            .appendStyledCodeBlock(cssRuleset.project, CSSLanguage.INSTANCE, "  " + cssRuleset.text.trimIndent())
+            .appendStyledCodeBlock(cssRuleset.project, CSSLanguage.INSTANCE, text)
             .toString()
     }
 
