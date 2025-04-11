@@ -88,6 +88,7 @@ fun findReferenceStyleFile(innerStringIndexPsiElement: JSLiteralExpression?): St
     return first as? StylesheetFile
 }
 
+
 fun generateLookupElementList(
     stylesheetFile: StylesheetFile,
     isDotCompletion: Boolean = false
