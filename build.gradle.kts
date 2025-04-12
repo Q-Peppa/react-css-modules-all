@@ -3,7 +3,7 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
     id("java") // Java support
-    alias(libs.plugins.kotlin) version "2.1.20" // Kotlin support
+    alias(libs.plugins.kotlin) // Kotlin support
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
     alias(libs.plugins.intelliJPlatform) // IntelliJ Platform Gradle Plugin
 }
@@ -12,12 +12,10 @@ plugins {
 group = providers.gradleProperty("pluginGroup").get()
 version = providers.gradleProperty("pluginVersion").get()
 
-tasks {
-    withType<JavaCompile> {
-        sourceCompatibility = "21"
-        targetCompatibility = "21"
-    }
+kotlin {
+    jvmToolchain(21)
 }
+
 
 repositories {
     mavenCentral()
@@ -26,9 +24,6 @@ repositories {
     }
 }
 
-kotlin {
-    jvmToolchain(21)
-}
 
 dependencies {
     testImplementation(libs.junit)
