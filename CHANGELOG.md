@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.3.0] - 2025-05-08
+
+- refactor: move css into completion
+
 ## [1.2.1] - 2025-04-11
 
 - fix: fix some error completion not in JSIndexedPropertyAccessExpression
@@ -107,8 +111,9 @@
 - support a little complex parents selector
 - support css selector has pseudo
 
-[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.2.0...HEAD
-
+[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.2.1...v1.3.0
+[1.2.1]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.3...v1.1.0
 [1.0.3]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.1...v1.0.3
