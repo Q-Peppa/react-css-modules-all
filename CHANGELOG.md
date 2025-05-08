@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.2.1] - 2025-04-11
+
+- fix: fix some error completion not in JSIndexedPropertyAccessExpression
+
 ## [1.2.0] - 2025-04-11
 
 - feat: now support completion with dot and auto wrap by single quote

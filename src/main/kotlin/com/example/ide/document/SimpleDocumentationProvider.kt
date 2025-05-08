@@ -20,7 +20,7 @@ class SimpleDocumentationProvider : AbstractDocumentationProvider() {
     private fun renderDoc(cssRuleset: CssRuleset): String {
         val text = cssRuleset.text.trimIndent().replaceLast("}", "").trim() + "\n}"
         return StringBuilder()
-            .appendStyledCodeBlock(cssRuleset.project, CSSLanguage.INSTANCE, text)
+            .appendStyledCodeBlock(cssRuleset.project, CSSLanguage.INSTANCE, code = text)
             .toString()
     }
 

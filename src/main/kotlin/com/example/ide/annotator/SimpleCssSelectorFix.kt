@@ -1,6 +1,5 @@
 package com.example.ide.annotator
 
-import com.example.ide.message.QCssMessageBundle
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -11,6 +10,8 @@ import com.intellij.psi.css.CssElementFactory
 import com.intellij.psi.css.StylesheetFile
 import org.jetbrains.annotations.NotNull
 
+const val FAMILY_NAME = "Unknown class name"
+
 class SimpleCssSelectorFix(private val key: String, private val stylesheetFile: StylesheetFile) :
     BaseIntentionAction() {
 
@@ -18,7 +19,7 @@ class SimpleCssSelectorFix(private val key: String, private val stylesheetFile: 
 
     override fun getText(): String = "$familyName .$key"
 
-    override fun getFamilyName(): String = QCssMessageBundle.message("familyName")
+    override fun getFamilyName(): String = FAMILY_NAME
 
     override fun invoke(@NotNull project: Project, editor: Editor?, file: PsiFile?) {
         if (editor == null || file == null) return
@@ -34,6 +35,5 @@ class SimpleCssSelectorFix(private val key: String, private val stylesheetFile: 
                 it.editor.caretModel.moveToOffset(offset)
             }
         }
-//        file.subtreeChanged()
     }
 }

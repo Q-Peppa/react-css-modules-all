@@ -5,7 +5,7 @@ plugins {
     id("java") // Java support
     alias(libs.plugins.kotlin) // Kotlin support
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
-    alias(libs.plugins.intelliJPlatform) // IntelliJ Platform Gradle Plugin
+    alias(libs.plugins.intelliJPlatform) // IntelliJ Platform Gradle Plugin'
 }
 
 
@@ -31,7 +31,6 @@ dependencies {
     intellijPlatform {
         webstorm("2024.2")
         bundledPlugin("JavaScript")
-        instrumentationTools()
         testFramework(TestFrameworkType.Platform)
     }
 }

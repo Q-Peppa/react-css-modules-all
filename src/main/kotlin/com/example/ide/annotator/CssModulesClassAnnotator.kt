@@ -1,6 +1,5 @@
 package com.example.ide.annotator
 
-import com.example.ide.message.QCssMessageBundle
 import com.example.ide.psi.CssModulesUnknownClassPsiReference
 import com.example.ide.psi.isStyleIndex
 import com.intellij.lang.annotation.AnnotationHolder
@@ -11,12 +10,15 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.css.CssRuleset
 import org.jetbrains.annotations.NotNull
 
+
+const val MESSAGE = "Selector declarations is Empty"
+const val UNKNOWN = "Unknown class name"
 class CssModulesClassAnnotator : Annotator {
     private fun resolveUnknownClass(holder: AnnotationHolder, psiElement: JSLiteralExpression) {
         val cssSelectorName = psiElement.stringValue?.trim().orEmpty()
         val reference = psiElement.reference
         if (reference is CssModulesUnknownClassPsiReference) {
-            val message = "${QCssMessageBundle.message("UnknownClassName")} \"$cssSelectorName\""
+            val message = "$UNKNOWN \"$cssSelectorName\""
             holder.newAnnotation(HighlightSeverity.WARNING, message)
                 .range(psiElement)
                 .withFix(SimpleCssSelectorFix(cssSelectorName, reference.stylesheetFile))
@@ -29,8 +31,7 @@ class CssModulesClassAnnotator : Annotator {
         if (ruleset is CssRuleset) {
             val declarations = ruleset.block?.declarations
             if (declarations.isNullOrEmpty()) {
-                val message = QCssMessageBundle.message("EmptyClass")
-                holder.newAnnotation(HighlightSeverity.WEAK_WARNING, message)
+                holder.newAnnotation(HighlightSeverity.WEAK_WARNING, MESSAGE)
                     .range(psiElement)
                     .create()
             }

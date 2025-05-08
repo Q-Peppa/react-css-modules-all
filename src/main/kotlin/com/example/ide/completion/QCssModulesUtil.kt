@@ -1,4 +1,4 @@
-package com.example.ide.css
+package com.example.ide.completion
 
 import com.intellij.codeInsight.completion.PrioritizedLookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
@@ -35,6 +35,7 @@ private fun recessivesClassInCssSelector(
 fun restoreAllSelector(stylesheetFile: StylesheetFile): MutableMap<String, PsiElement> {
     val of = mutableMapOf<String, PsiElement>()
     val scope = GlobalSearchScope.fileScope(stylesheetFile.project, stylesheetFile.virtualFile)
+
     CssIndexUtil.processAmpersandSelectors(stylesheetFile.project, scope) {
         // realSelector in file , afterResolve is dummy file, can't find resolve and lineNumber
         val realSelector = it
@@ -79,6 +80,7 @@ fun buildLookupElementHelper(
  *  foo["$1"] , $1 position is innerStringIndexPsiElement , the type should be JSLiteralExpression
  */
 fun findReferenceStyleFile(innerStringIndexPsiElement: JSLiteralExpression?): StylesheetFile? {
+
     if (innerStringIndexPsiElement == null) return null
     val callKey = innerStringIndexPsiElement.parent?.firstChild // by style["$1"] get styles
     if (callKey !is JSReferenceExpression) return null

@@ -1,8 +1,8 @@
 package com.example.ide.psi
 
 
-import com.example.ide.css.findReferenceStyleFile
-import com.example.ide.css.restoreAllSelector
+import com.example.ide.completion.findReferenceStyleFile
+import com.example.ide.completion.restoreAllSelector
 import com.intellij.lang.javascript.JSTokenTypes
 import com.intellij.lang.javascript.psi.JSFile
 import com.intellij.lang.javascript.psi.JSIndexedPropertyAccessExpression
@@ -26,6 +26,7 @@ class CssModuleReferenceProvider : PsiReferenceProvider() {
         if (name.isBlank()) return PsiReference.EMPTY_ARRAY
         val styleFile = findReferenceStyleFile(element) ?: return PsiReference.EMPTY_ARRAY
         val map = restoreAllSelector(styleFile)
+
         return if (map.containsKey(name)) arrayOf(object : PsiReferenceBase<PsiElement>(element) {
             override fun resolve(): PsiElement? = map[name]
         }) else arrayOf(CssModulesUnknownClassPsiReference(element, styleFile))
@@ -59,6 +60,3 @@ class CssModulesIndexedStylesVarPsiReferenceContributorKt : PsiReferenceContribu
 }
 
 fun isStyleIndex(element: JSLiteralExpression): Boolean = findReferenceStyleFile(element) !== null
-
-
-

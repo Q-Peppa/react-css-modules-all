@@ -3,19 +3,16 @@
     <id>react.css.module.all</id>
     <name>React Css Modules All</name>
     <vendor>Peppa</vendor>
-    <resource-bundle>messages.MyBundle</resource-bundle>
     <description><![CDATA[
-     <h1>React-Css-Module-All</h1>
-     <h2>support Css Modules in project and not transform css case to CamelCase</h4>
-     <h3>
-          <ul>
-             <li>auto-detected css module class name add completion</li>
-             <li>support parse Parent Selector(&) in scss file</li>
-             <li>find reference support, click name navigate to styles file</li>
-             <li>quick fix css selector not exist</li>
-         </ul>
-     </h3>
-    ]]></description>
+     Support Css Modules completion, peek defined, find reference.
+      <ul>
+         <li>auto-detected css module class name add completion</li>
+         <li>support parse Parent Selector(&) in scss file</li>
+         <li>find reference support, click name navigate to styles file</li>
+         <li>quick fix css selector not exist</li>
+       </ul>
+    ]]>
+    </description>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
@@ -27,11 +24,12 @@
                 implementationClass="com.example.ide.document.SimpleDocumentationProvider"
                 language="JavaScript"/>
         <!--  find reference -->
-        <psi.referenceContributor implementation="com.example.ide.psi.CssModulesIndexedStylesVarPsiReferenceContributorKt"
-                                  language="JavaScript"/>
+        <psi.referenceContributor
+                implementation="com.example.ide.psi.CssModulesIndexedStylesVarPsiReferenceContributorKt"
+                language="JavaScript"/>
         <!-- supply completion  -->
         <completion.contributor language="JavaScript"
-                                implementationClass="com.example.ide.css.CssModulesClassNameCompletionContributor"/>
+                                implementationClass="com.example.ide.completion.CssModulesClassNameCompletionContributor"/>
         <!--   if not found reference ,  supply quick fix -->
         <annotator language="JavaScript" implementationClass="com.example.ide.annotator.CssModulesClassAnnotator"/>
     </extensions>

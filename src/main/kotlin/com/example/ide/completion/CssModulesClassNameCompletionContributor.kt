@@ -1,6 +1,7 @@
-package com.example.ide.css
+package com.example.ide.completion;
 
 import com.intellij.codeInsight.completion.*
+import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.lang.ecmascript6.psi.ES6ImportedBinding
 import com.intellij.lang.javascript.JavascriptLanguage
 import com.intellij.lang.javascript.psi.JSIndexedPropertyAccessExpression
@@ -66,9 +67,9 @@ class CssModulesClassNameCompletionContributor : CompletionContributor() {
                 && position.prevSibling.prevSibling is JSReferenceExpression
             ) {
                 val style = position.prevSibling.prevSibling
-                style.reference?.resolve()?.let {
-                    if (it !is ES6ImportedBinding || it.findReferencedElements().isEmpty()) return
-                    val first = it.findReferencedElements().first()
+                style.reference?.resolve()?.let { stylesFileImportStatement ->
+                    if (stylesFileImportStatement !is ES6ImportedBinding || stylesFileImportStatement.findReferencedElements().isEmpty()) return
+                    val first = stylesFileImportStatement.findReferencedElements().first()
                     first.let {
                         resultSet.addAllElements(generateLookupElementList(it as StylesheetFile, true).map {
                             // if choose completion with - , auto make to IndexedAccess
@@ -81,4 +82,31 @@ class CssModulesClassNameCompletionContributor : CompletionContributor() {
             }
         }
     }
+    private class StylesInsertHandler: InsertHandler<LookupElement>{
+       private val needsBracketSyntax: Boolean;
+
+    constructor(needsBracketSyntax: Boolean) {
+        this.needsBracketSyntax = needsBracketSyntax
+
+    }
+
+    override fun handleInsert(
+        context: InsertionContext,
+        item: LookupElement
+    ) {
+        val editor = context.editor
+        val document = editor.document
+        val startOffset = context.startOffset
+        val dotPosOffset = startOffset - 1
+        val tailOffset = context.tailOffset
+        if (needsBracketSyntax) {
+            val lookupString = item.lookupString
+            document.replaceString(dotPosOffset, tailOffset, "[$lookupString]")
+            // move cursor to the end of the inserted text
+            // 2 =  [ + ]
+            editor.caretModel.moveToOffset(dotPosOffset + item.lookupString.length + 2)
+        }
+    }
+    }
+
 }
