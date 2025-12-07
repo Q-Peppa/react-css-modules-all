@@ -3,6 +3,9 @@ package com.example.ide.psi
 
 import com.example.ide.completion.findReferenceStyleFile
 import com.intellij.lang.ecmascript6.psi.ES6ImportedBinding
+import com.intellij.lang.javascript.JSTokenTypes
+import com.intellij.lang.javascript.psi.JSFile
+import com.intellij.lang.javascript.psi.JSIndexedPropertyAccessExpression
 import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.lang.javascript.psi.JSReferenceExpression
 import com.intellij.patterns.PlatformPatterns
@@ -64,32 +67,31 @@ class CssModuleDotReferenceProvider : PsiReferenceProvider() {
     }
 }
 
-
-// Filter for styles.className syntax
-private val DOT_ACCESS_FILTER = PlatformPatterns.psiElement(JSReferenceExpression::class.java).and(
+// Filter for styles["className"] syntax
+private val INDEXED_ACCESS_FILTER = PlatformPatterns.psiElement(JSLiteralExpression::class.java).and(
     FilterPattern(
         object : ElementFilter {
             override fun isAcceptable(element: Any?, context: PsiElement?): Boolean {
-
-                return element is JSReferenceExpression
-                        && element.reference?.resolve() !== null
-                        && (element.reference?.resolve() as ES6ImportedBinding).findReferencedElements()
-                    .isNotEmpty()
-                        && (element.reference?.resolve() as ES6ImportedBinding).findReferencedElements()
-                    .first() is StylesheetFile
+                return element is JSLiteralExpression
+                        && element.parent is JSIndexedPropertyAccessExpression
+                        && context != null
+                        && context.containingFile is JSFile
+                        && isStyleIndex(element)
+                        && element.node.firstChildNode?.elementType == JSTokenTypes.STRING_LITERAL
             }
 
             override fun isClassAcceptable(hintClass: Class<*>?): Boolean {
-                return JSReferenceExpression::class.java.isAssignableFrom(hintClass!!)
+                return JSLiteralExpression::class.java.isAssignableFrom(hintClass!!)
             }
         }
     ))
 
+
 class CssModulesIndexedStylesVarPsiReferenceContributor : PsiReferenceContributor() {
     override fun registerReferenceProviders(@NotNull registrar: PsiReferenceRegistrar) {
-        // Register provider for styles.className syntax
+        // Register provider for styles["className"] syntax
         registrar.registerReferenceProvider(
-            DOT_ACCESS_FILTER, CssModuleDotReferenceProvider()
+            INDEXED_ACCESS_FILTER, CssModuleIndexedReferenceProvider()
         )
     }
 }
