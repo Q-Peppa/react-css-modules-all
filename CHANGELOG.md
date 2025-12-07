@@ -2,6 +2,27 @@
 
 ## [Unreleased]
 
+## [1.4.0] - 2025-12-08
+
+### Bug Fixes
+
+- fix: Quick fix for unknown CSS class now correctly refreshes annotations after adding new class
+- fix: PSI reference caching issue - CSS class detection now dynamically resolves on each check
+- fix: Completion priority setting was not taking effect (PrioritizedLookupElement return value was discarded)
+
+### New Features
+
+- feat: Support `styles.className` dot syntax for unknown class detection (previously only `styles['className']` was supported)
+- feat: Quick fix now positions cursor at proper indentation inside the CSS block
+
+### Code Quality
+
+- refactor: Unified reference system with `CssModuleClassReference` for dynamic resolution
+- refactor: Improved code style - use Kotlin primary constructor for `StylesInsertHandler`
+- refactor: Renamed class `CssModulesIndexedStylesVarPsiReferenceContributorKt` to `CssModulesIndexedStylesVarPsiReferenceContributor`
+- refactor: Made internal utilities private (`replaceLast`, `CLASS_NAME_FILTER`)
+- chore: Updated JVM toolchain from 21 to 17 for broader compatibility
+
 ## [1.3.0] - 2025-05-08
 
 - refactor: move css into completion
@@ -29,15 +50,15 @@
 
 - fix: fix some error completion not in JSIndexedPropertyAccessExpression
 
+## [1.0.2] - 2024-11-10
+
+- update version number for jetbarins 2024.3
+
 ## [1.0.1] - 2024-10-10
 
 - fix bug will case psi not work
 - not call subtreeChanged, UI cost very expensive
 - add getQuickNavigateInfo to polyfill mouse left info
-
-## [1.0.2] - 2024-11-10
-
-- update version number for jetbarins 2024.3
 
 ## [1.0.0] - 2024-10-01
 
@@ -111,14 +132,15 @@
 - support a little complex parents selector
 - support css selector has pseudo
 
-[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.3...v1.1.0
-[1.0.3]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.1...v1.0.3
-[1.0.2]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.0...v1.0.2
-[1.0.1]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.2...v1.0.1
+[1.0.3]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.2...v1.0.3
+[1.0.2]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.12...v1.0.0
 [0.0.12]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.11...v0.0.12
 [0.0.11]: https://github.com/Q-Peppa/react-css-modules-all/compare/v0.0.10...v0.0.11
