@@ -4,13 +4,26 @@
     <name>React Css Modules All</name>
     <vendor>Peppa</vendor>
     <description><![CDATA[
-     Support Css Modules completion, peek defined, find reference.
-      <ul>
-         <li>auto-detected css module class name add completion</li>
-         <li>support parse Parent Selector(&) in scss file</li>
-         <li>find reference support, click name navigate to styles file</li>
-         <li>quick fix css selector not exist</li>
-       </ul>
+<p><b>CSS Modules support for React/JavaScript projects</b></p>
+
+<p>Enhance your CSS Modules development experience with intelligent code assistance.</p>
+
+<h3>Features</h3>
+<ul>
+    <li><b>Smart Completion</b> - Auto-complete CSS class names from imported style modules</li>
+    <li><b>Dual Syntax Support</b> - Works with both <code>styles['className']</code> and <code>styles.className</code></li>
+    <li><b>Go to Definition</b> - Click on class name to navigate directly to CSS/SCSS definition</li>
+    <li><b>Unknown Class Detection</b> - Highlights undefined CSS classes with warnings</li>
+    <li><b>Quick Fix</b> - Instantly create missing CSS selectors with one click</li>
+    <li><b>Parent Selector Support</b> - Full support for SCSS/LESS <code>&amp;</code> (parent selector) syntax</li>
+    <li><b>Hover Documentation</b> - Preview CSS rules on mouse hover</li>
+</ul>
+
+<h3>Supported File Types</h3>
+<ul>
+    <li>CSS, SCSS, LESS modules</li>
+    <li>JavaScript, TypeScript, JSX, TSX</li>
+</ul>
     ]]>
     </description>
 
