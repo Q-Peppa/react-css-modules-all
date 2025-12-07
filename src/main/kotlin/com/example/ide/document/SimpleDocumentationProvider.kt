@@ -7,7 +7,7 @@ import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.psi.PsiElement
 import com.intellij.psi.css.CssRuleset
 
-fun String.replaceLast(target: String, replacement: String): String {
+private fun String.replaceLast(target: String, replacement: String): String {
     val index = this.lastIndexOf(target)
     return if (index != -1) {
         this.substring(0, index) + replacement + this.substring(index + target.length)

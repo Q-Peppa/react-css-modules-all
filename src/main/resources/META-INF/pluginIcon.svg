@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-stacking-context="true"
+<svg xmlns="http://www.w3.org/2000/svg" data-stacking-context="true"
      aria-owns="svg" width="40" height="40"
      viewBox="72.5 0 40 40">
     <style/>
@@ -28,7 +28,8 @@
                       font-variant="normal" font-weight="400" direction="ltr" letter-spacing="normal"
                       text-decoration="rgb(0, 0, 0)" text-anchor="start" text-rendering="auto" unicode-bidi="normal"
                       word-spacing="0px" writing-mode="horizontal-tb" user-select="auto" fill="rgb(0, 0, 0)">
-                    <tspan xml:space="preserve" x="76.19999694824219" y="9.399993896484375" textLength="12.633331298828125" lengthAdjust="spacingAndGlyphs">CSS</tspan>
+                    <tspan xml:space="preserve" x="76.19999694824219" y="9.399993896484375"
+                           textLength="12.633331298828125" lengthAdjust="spacingAndGlyphs">CSS</tspan>
                 </text>
             </g>
             <g data-tag="div" id="div1" data-z-index="auto" data-stacking-context="true">
@@ -38,7 +39,8 @@
                       font-variant="normal" font-weight="400" direction="ltr" letter-spacing="normal"
                       text-decoration="rgb(0, 0, 0)" text-anchor="start" text-rendering="auto" unicode-bidi="isolate"
                       word-spacing="0px" writing-mode="horizontal-tb" user-select="auto" fill="rgb(0, 0, 0)">
-                    <tspan xml:space="preserve" x="76.19999694824219" y="18.399993896484375" textLength="31.083343505859375" lengthAdjust="spacingAndGlyphs">MODULES</tspan>
+                    <tspan xml:space="preserve" x="76.19999694824219" y="18.399993896484375"
+                           textLength="31.083343505859375" lengthAdjust="spacingAndGlyphs">MODULES</tspan>
                 </text>
             </g>
             <g data-tag="div" id="block1" class="block underline" data-z-index="auto" data-stacking-context="true">
@@ -49,7 +51,8 @@
                       text-decoration="underline rgb(0, 0, 0)" text-anchor="start" text-rendering="auto"
                       unicode-bidi="isolate" word-spacing="0px" writing-mode="horizontal-tb" user-select="auto"
                       fill="rgb(0, 0, 0)">
-                    <tspan xml:space="preserve" x="76.19999694824219" y="27.399993896484375" textLength="11.550003051757812" lengthAdjust="spacingAndGlyphs">ALL</tspan>
+                    <tspan xml:space="preserve" x="76.19999694824219" y="27.399993896484375"
+                           textLength="11.550003051757812" lengthAdjust="spacingAndGlyphs">ALL</tspan>
                 </text>
             </g>
         </g>

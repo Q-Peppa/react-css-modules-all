@@ -2,6 +2,7 @@ package com.example.ide.completion;
 
 import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElement
+import com.intellij.codeInsight.lookup.LookupElementDecorator
 import com.intellij.lang.ecmascript6.psi.ES6ImportedBinding
 import com.intellij.lang.javascript.JavascriptLanguage
 import com.intellij.lang.javascript.psi.JSIndexedPropertyAccessExpression
@@ -68,12 +69,14 @@ class CssModulesClassNameCompletionContributor : CompletionContributor() {
             ) {
                 val style = position.prevSibling.prevSibling
                 style.reference?.resolve()?.let { stylesFileImportStatement ->
-                    if (stylesFileImportStatement !is ES6ImportedBinding || stylesFileImportStatement.findReferencedElements().isEmpty()) return
+                    if (stylesFileImportStatement !is ES6ImportedBinding || stylesFileImportStatement.findReferencedElements()
+                            .isEmpty()
+                    ) return
                     val first = stylesFileImportStatement.findReferencedElements().first()
                     first.let {
-                        resultSet.addAllElements(generateLookupElementList(it as StylesheetFile, true).map {
+                        resultSet.addAllElements(generateLookupElementList(it as StylesheetFile, true).map { element ->
                             // if choose completion with - , auto make to IndexedAccess
-                            it.withInsertHandler { context, item ->
+                            LookupElementDecorator.withInsertHandler(element) { context, item ->
                                 StylesInsertHandler(item.lookupString.contains(SplitChar)).handleInsert(context, item)
                             }
                         })
@@ -82,31 +85,22 @@ class CssModulesClassNameCompletionContributor : CompletionContributor() {
             }
         }
     }
-    private class StylesInsertHandler: InsertHandler<LookupElement>{
-       private val needsBracketSyntax: Boolean;
 
-    constructor(needsBracketSyntax: Boolean) {
-        this.needsBracketSyntax = needsBracketSyntax
-
-    }
-
-    override fun handleInsert(
-        context: InsertionContext,
-        item: LookupElement
-    ) {
-        val editor = context.editor
-        val document = editor.document
-        val startOffset = context.startOffset
-        val dotPosOffset = startOffset - 1
-        val tailOffset = context.tailOffset
-        if (needsBracketSyntax) {
-            val lookupString = item.lookupString
-            document.replaceString(dotPosOffset, tailOffset, "[$lookupString]")
-            // move cursor to the end of the inserted text
-            // 2 =  [ + ]
-            editor.caretModel.moveToOffset(dotPosOffset + item.lookupString.length + 2)
+    private class StylesInsertHandler(private val needsBracketSyntax: Boolean) : InsertHandler<LookupElement> {
+        override fun handleInsert(context: InsertionContext, item: LookupElement) {
+            if (needsBracketSyntax) {
+                val editor = context.editor
+                val document = editor.document
+                val startOffset = context.startOffset
+                val dotPosOffset = startOffset - 1
+                val tailOffset = context.tailOffset
+                val lookupString = item.lookupString
+                document.replaceString(dotPosOffset, tailOffset, "[$lookupString]")
+                // move cursor to the end of the inserted text
+                // 2 = [ + ]
+                editor.caretModel.moveToOffset(dotPosOffset + lookupString.length + 2)
+            }
         }
-    }
     }
 
 }

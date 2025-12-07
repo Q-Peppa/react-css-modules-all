@@ -1,5 +1,6 @@
 package com.example.ide.annotator
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -23,17 +24,19 @@ class SimpleCssSelectorFix(private val key: String, private val stylesheetFile: 
 
     override fun invoke(@NotNull project: Project, editor: Editor?, file: PsiFile?) {
         if (editor == null || file == null) return
+        val rulesetText = "\n.$key {\n    \n}"
         val ruleset = CssElementFactory.getInstance(project).createRuleset(
-            "\n.$key {\n\n}",
+            rulesetText,
             stylesheetFile.language
         )
         val afterRuleSet = stylesheetFile.add(ruleset)!!
         stylesheetFile.navigate(true)
-        val offset = afterRuleSet.textOffset + ruleset.text.indexOf("{") + 2
+        val offset = afterRuleSet.textOffset + rulesetText.indexOf("{") + 4
         FileEditorManager.getInstance(project).getEditors(stylesheetFile.virtualFile).forEach {
             if (it is TextEditor) {
                 it.editor.caretModel.moveToOffset(offset)
             }
         }
+        DaemonCodeAnalyzer.getInstance(project).restart(file)
     }
 }

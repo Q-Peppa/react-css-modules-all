@@ -25,7 +25,7 @@
                 language="JavaScript"/>
         <!--  find reference -->
         <psi.referenceContributor
-                implementation="com.example.ide.psi.CssModulesIndexedStylesVarPsiReferenceContributorKt"
+                implementation="com.example.ide.psi.CssModulesIndexedStylesVarPsiReferenceContributor"
                 language="JavaScript"/>
         <!-- supply completion  -->
         <completion.contributor language="JavaScript"

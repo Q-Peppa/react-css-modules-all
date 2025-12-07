@@ -1,6 +1,7 @@
 package com.example.ide.completion
 
 import com.intellij.codeInsight.completion.PrioritizedLookupElement
+import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.icons.AllIcons
 import com.intellij.lang.ecmascript6.psi.ES6ImportedBinding
@@ -58,7 +59,7 @@ fun buildLookupElementHelper(
     css: PsiElement,
     location: String,
     isNeedWrapByChar: Boolean = false
-): LookupElementBuilder {
+): LookupElement {
     val lookupString = CssEscapeUtil.escapeSpecialCssChars(name)
     val lineNumber = (css as CssRuleset).selectors.first().lineNumber
     val lookup = if (isNeedWrapByChar) "'$lookupString'" else lookupString
@@ -71,8 +72,7 @@ fun buildLookupElementHelper(
         .withCaseSensitivity(true)
         .withTailText(" ".repeat(SpaceSize) + "($location:$lineNumber)", true)
 
-    PrioritizedLookupElement.withPriority(ele, CssCompletionUtil.CSS_SELECTOR_SUFFIX_PRIORITY.toDouble())
-    return ele
+    return PrioritizedLookupElement.withPriority(ele, CssCompletionUtil.CSS_SELECTOR_SUFFIX_PRIORITY.toDouble())
 }
 
 /**
@@ -94,7 +94,7 @@ fun findReferenceStyleFile(innerStringIndexPsiElement: JSLiteralExpression?): St
 fun generateLookupElementList(
     stylesheetFile: StylesheetFile,
     isDotCompletion: Boolean = false
-): List<LookupElementBuilder> {
+): List<LookupElement> {
     val shortLocation =
         PathUtil.toSystemIndependentName(SymbolPresentationUtil.getFilePathPresentation(stylesheetFile))
     val allSelector = restoreAllSelector(stylesheetFile)

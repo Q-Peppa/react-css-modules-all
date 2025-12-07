@@ -1,6 +1,6 @@
 package com.example.ide.annotator
 
-import com.example.ide.psi.CssModulesUnknownClassPsiReference
+import com.example.ide.psi.CssModuleClassReference
 import com.example.ide.psi.isStyleIndex
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
@@ -13,11 +13,14 @@ import org.jetbrains.annotations.NotNull
 
 const val MESSAGE = "Selector declarations is Empty"
 const val UNKNOWN = "Unknown class name"
+
 class CssModulesClassAnnotator : Annotator {
     private fun resolveUnknownClass(holder: AnnotationHolder, psiElement: JSLiteralExpression) {
         val cssSelectorName = psiElement.stringValue?.trim().orEmpty()
         val reference = psiElement.reference
-        if (reference is CssModulesUnknownClassPsiReference) {
+
+        // Check if the reference is unresolved (CSS class doesn't exist)
+        if (reference is CssModuleClassReference && reference.isUnresolved()) {
             val message = "$UNKNOWN \"$cssSelectorName\""
             holder.newAnnotation(HighlightSeverity.WARNING, message)
                 .range(psiElement)
