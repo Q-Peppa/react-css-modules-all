@@ -2,15 +2,15 @@ package com.example.ide.annotator
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.css.CssElementFactory
 import com.intellij.psi.css.StylesheetFile
-import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.psi.*
 import org.jetbrains.annotations.NotNull
 
 const val FAMILY_NAME = "Unknown class name"

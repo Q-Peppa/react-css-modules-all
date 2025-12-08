@@ -1,17 +1,16 @@
 package com.example.ide.annotator
 
+import com.example.ide.completion.resolveStylesheetFromReference
 import com.example.ide.psi.CssModuleClassReference
 import com.example.ide.psi.isStyleIndex
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.lang.ecmascript6.psi.ES6ImportedBinding
 import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.lang.javascript.psi.JSReferenceExpression
 import com.intellij.psi.PsiElement
 import com.intellij.psi.css.CssClass
 import com.intellij.psi.css.CssRuleset
-import com.intellij.psi.css.StylesheetFile
 import org.jetbrains.annotations.NotNull
 
 
@@ -51,8 +50,7 @@ class CssModulesClassAnnotator : Annotator {
             resolveEmptyClass(holder, psiElement)
         }
         if (psiElement is JSReferenceExpression) {
-            val binding = psiElement.firstChild?.reference?.resolve() as? ES6ImportedBinding ?: return
-            val styleFile = binding.findReferencedElements().firstOrNull() as? StylesheetFile ?: return
+            val styleFile = resolveStylesheetFromReference(psiElement) ?: return
             if (psiElement.reference?.resolve() !is CssClass) {
                 holder.newAnnotation(
                     HighlightSeverity.WEAK_WARNING,

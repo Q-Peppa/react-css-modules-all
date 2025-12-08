@@ -5,6 +5,7 @@ import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.icons.AllIcons
 import com.intellij.lang.ecmascript6.psi.ES6ImportedBinding
+import com.intellij.lang.javascript.psi.JSIndexedPropertyAccessExpression
 import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.lang.javascript.psi.JSReferenceExpression
 import com.intellij.openapi.util.text.Strings
@@ -15,6 +16,9 @@ import com.intellij.psi.css.impl.stubs.index.CssIndexUtil
 import com.intellij.psi.css.util.CssCompletionUtil
 import com.intellij.psi.presentation.java.SymbolPresentationUtil
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.util.CachedValueProvider
+import com.intellij.psi.util.CachedValuesManager
+import com.intellij.psi.util.PsiModificationTracker
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.PathUtil
 
@@ -33,24 +37,24 @@ private fun recessivesClassInCssSelector(
 /**
  * return all available css className in file map , foo-> some ruleset
  */
-fun restoreAllSelector(stylesheetFile: StylesheetFile): MutableMap<String, PsiElement> {
-    val of = mutableMapOf<String, PsiElement>()
-    val scope = GlobalSearchScope.fileScope(stylesheetFile.project, stylesheetFile.virtualFile)
+fun restoreAllSelector(stylesheetFile: StylesheetFile): MutableMap<String, PsiElement> =
+    CachedValuesManager.getCachedValue(stylesheetFile) {
+        val of = mutableMapOf<String, PsiElement>()
+        val scope = GlobalSearchScope.fileScope(stylesheetFile.project, stylesheetFile.virtualFile)
 
-    CssIndexUtil.processAmpersandSelectors(stylesheetFile.project, scope) {
-        // realSelector in file , afterResolve is dummy file, can't find resolve and lineNumber
-        val realSelector = it
-        it.processAmpersandEvaluatedSelectors { afterResolve ->
-            recessivesClassInCssSelector(realSelector, afterResolve, of)
+        CssIndexUtil.processAmpersandSelectors(stylesheetFile.project, scope) { selector ->
+            selector.processAmpersandEvaluatedSelectors { evaluated ->
+                recessivesClassInCssSelector(selector, evaluated, of)
+            }
+            true
         }
-        true
+        CssIndexUtil.processAllSelectorSuffixes(CssSelectorSuffixType.CLASS, stylesheetFile.project, scope) { name, css ->
+            of[name] = css.ruleset!!
+            true
+        }
+
+        CachedValueProvider.Result.create(of, stylesheetFile, PsiModificationTracker.MODIFICATION_COUNT)
     }
-    CssIndexUtil.processAllSelectorSuffixes(CssSelectorSuffixType.CLASS, stylesheetFile.project, scope) { name, css ->
-        of[name] = css.ruleset!!
-        true
-    }
-    return of
-}
 
 
 const val SpaceSize = 2
@@ -76,19 +80,30 @@ fun buildLookupElementHelper(
 }
 
 /**
+ * 解析引用处的样式文件。支持 styles["xxx"] 与 styles.xxx 两种用法，集中解析以避免重复逻辑。
+ */
+fun resolveStylesheetFromReference(element: PsiElement?): StylesheetFile? = when (element) {
+    is JSLiteralExpression -> {
+        // styles["xxx"]
+        val callKey = (element.parent as? JSIndexedPropertyAccessExpression)?.firstChild as? JSReferenceExpression
+            ?: return null
+        val binding = callKey.reference?.resolve() as? ES6ImportedBinding ?: return null
+        binding.findReferencedElements().firstOrNull() as? StylesheetFile
+    }
+    is JSReferenceExpression -> {
+        // styles.xxx
+        val binding = element.firstChild?.reference?.resolve() as? ES6ImportedBinding ?: return null
+        binding.findReferencedElements().firstOrNull() as? StylesheetFile
+    }
+    else -> null
+}
+
+/**
  * @description: find style file by js variable
  *  foo["$1"] , $1 position is innerStringIndexPsiElement , the type should be JSLiteralExpression
  */
-fun findReferenceStyleFile(innerStringIndexPsiElement: JSLiteralExpression?): StylesheetFile? {
-
-    if (innerStringIndexPsiElement == null) return null
-    val callKey = innerStringIndexPsiElement.parent?.firstChild // by style["$1"] get styles
-    if (callKey !is JSReferenceExpression) return null
-    val element = callKey.reference?.resolve() // will return import foo from  "bar"
-    if (element !is ES6ImportedBinding || element.findReferencedElements().isEmpty()) return null
-    val first = element.findReferencedElements().first()
-    return first as? StylesheetFile
-}
+fun findReferenceStyleFile(innerStringIndexPsiElement: JSLiteralExpression?): StylesheetFile? =
+    resolveStylesheetFromReference(innerStringIndexPsiElement)
 
 
 fun generateLookupElementList(

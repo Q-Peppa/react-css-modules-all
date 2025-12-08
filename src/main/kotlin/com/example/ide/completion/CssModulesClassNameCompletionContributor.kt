@@ -72,8 +72,8 @@ class CssModulesClassNameCompletionContributor : CompletionContributor() {
                     if (stylesFileImportStatement !is ES6ImportedBinding || stylesFileImportStatement.findReferencedElements()
                             .isEmpty()
                     ) return
-                    val first = stylesFileImportStatement.findReferencedElements().first()
-                    first.let {
+                    val first = stylesFileImportStatement.findReferencedElements().firstOrNull()
+                    first?.let {
                         resultSet.addAllElements(generateLookupElementList(it as StylesheetFile, true).map { element ->
                             // if choose completion with - , auto make to IndexedAccess
                             LookupElementDecorator.withInsertHandler(element) { context, item ->
