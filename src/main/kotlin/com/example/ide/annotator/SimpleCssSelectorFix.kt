@@ -9,6 +9,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.css.CssElementFactory
 import com.intellij.psi.css.StylesheetFile
+import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.psi.*
 import org.jetbrains.annotations.NotNull
 
 const val FAMILY_NAME = "Unknown class name"
@@ -29,7 +31,9 @@ class SimpleCssSelectorFix(private val key: String, private val stylesheetFile: 
             rulesetText,
             stylesheetFile.language
         )
-        val afterRuleSet = stylesheetFile.add(ruleset)!!
+        val afterRuleSet = WriteCommandAction.runWriteCommandAction<PsiElement?>(project) {
+            stylesheetFile.add(ruleset)
+        } ?: return
         stylesheetFile.navigate(true)
         val offset = afterRuleSet.textOffset + rulesetText.indexOf("{") + 4
         FileEditorManager.getInstance(project).getEditors(stylesheetFile.virtualFile).forEach {
