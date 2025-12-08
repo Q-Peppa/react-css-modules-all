@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [1.5.1] - 2025-12-09
+
+- Extracted stylesheet parsing logic into a separate function `resolveStylesheetFromReference`
+- Removed duplicate style file lookup code
+- Optimized CSS selector caching mechanism
+- Unified handling of JS reference expressions and literal expressions parsing
+- Added null safety checks to avoid NullPointerException
+- Cleaned up unused import statements
+
 ## [1.5.0] - 2025-12-08
 
 ### Bug Fixes
@@ -132,7 +141,9 @@
 - support a little complex parents selector
 - support css selector has pseudo
 
-[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.5.1...HEAD
+[1.5.1]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.5.0...v1.5.1
+[1.5.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.3.0...v1.5.0
 [1.4.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.2.0...v1.2.1
