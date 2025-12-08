@@ -32,13 +32,3 @@ class CssModuleClassReference(
     fun isUnresolved(): Boolean = resolve() == null
 }
 
-/**
- * Legacy reference class for backwards compatibility.
- * @deprecated Use CssModuleClassReference instead
- */
-class CssModulesUnknownClassPsiReference(
-    element: PsiElement,
-    val stylesheetFile: StylesheetFile
-) : PsiReferenceBase<PsiElement?>(element) {
-    override fun resolve(): PsiElement = element
-}

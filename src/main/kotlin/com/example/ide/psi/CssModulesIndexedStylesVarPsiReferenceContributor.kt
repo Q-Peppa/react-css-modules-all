@@ -2,23 +2,19 @@ package com.example.ide.psi
 
 
 import com.example.ide.completion.findReferenceStyleFile
-import com.intellij.lang.ecmascript6.psi.ES6ImportedBinding
 import com.intellij.lang.javascript.JSTokenTypes
 import com.intellij.lang.javascript.psi.JSFile
 import com.intellij.lang.javascript.psi.JSIndexedPropertyAccessExpression
 import com.intellij.lang.javascript.psi.JSLiteralExpression
-import com.intellij.lang.javascript.psi.JSReferenceExpression
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.*
-import com.intellij.psi.css.StylesheetFile
-import com.intellij.psi.filters.ElementFilter
-import com.intellij.psi.filters.position.FilterPattern
 import com.intellij.util.ProcessingContext
 import org.jetbrains.annotations.NotNull
 
 
 /**
- * Reference provider for styles["className"] syntax
+ * Reference provider for styles["className"] syntax.
+ * All validation logic is centralized here to avoid duplicate PSI resolution.
  */
 class CssModuleIndexedReferenceProvider : PsiReferenceProvider() {
 
@@ -27,8 +23,21 @@ class CssModuleIndexedReferenceProvider : PsiReferenceProvider() {
         context: ProcessingContext
     ): Array<PsiReference> {
         if (element !is JSLiteralExpression) return PsiReference.EMPTY_ARRAY
+
+        // Fast check: must be a string literal token
+        if (element.node.firstChildNode?.elementType != JSTokenTypes.STRING_LITERAL) {
+            return PsiReference.EMPTY_ARRAY
+        }
+
+        // Fast check: must be inside indexed property access (styles["xxx"])
+        if (element.parent !is JSIndexedPropertyAccessExpression) {
+            return PsiReference.EMPTY_ARRAY
+        }
+
         val name = element.stringValue?.trim().orEmpty()
         if (name.isBlank()) return PsiReference.EMPTY_ARRAY
+
+        // Expensive check: resolve to style file (done only once here)
         val styleFile = findReferenceStyleFile(element) ?: return PsiReference.EMPTY_ARRAY
 
         // Always return a dynamic reference that resolves fresh each time
@@ -37,54 +46,13 @@ class CssModuleIndexedReferenceProvider : PsiReferenceProvider() {
 }
 
 /**
- * Reference provider for styles.className syntax
+ * Simplified filter - only does basic type matching.
+ * Expensive PSI resolution is deferred to the provider.
  */
-class CssModuleDotReferenceProvider : PsiReferenceProvider() {
-
-    override fun getReferencesByElement(
-        element: PsiElement,
-        context: ProcessingContext
-    ): Array<PsiReference> {
-        if (element !is JSReferenceExpression) return PsiReference.EMPTY_ARRAY
-
-        // Get the qualifier (the part before the dot, e.g., "styles" in "styles.app")
-        val qualifier = element.qualifier
-        if (qualifier !is JSReferenceExpression) return PsiReference.EMPTY_ARRAY
-
-        // Resolve the qualifier to check if it's a CSS module import
-        val resolved = qualifier.reference?.resolve()
-        if (resolved !is ES6ImportedBinding) return PsiReference.EMPTY_ARRAY
-
-        val referencedElements = resolved.findReferencedElements()
-        if (referencedElements.isEmpty()) return PsiReference.EMPTY_ARRAY
-
-        val styleFile = referencedElements.first() as? StylesheetFile ?: return PsiReference.EMPTY_ARRAY
-
-        // Get the property name (the part after the dot)
-        val propertyName = element.referenceName ?: return PsiReference.EMPTY_ARRAY
-
-        return arrayOf(CssModuleClassReference(element, styleFile, propertyName))
-    }
-}
-
-// Filter for styles["className"] syntax
-private val INDEXED_ACCESS_FILTER = PlatformPatterns.psiElement(JSLiteralExpression::class.java).and(
-    FilterPattern(
-        object : ElementFilter {
-            override fun isAcceptable(element: Any?, context: PsiElement?): Boolean {
-                return element is JSLiteralExpression
-                        && element.parent is JSIndexedPropertyAccessExpression
-                        && context != null
-                        && context.containingFile is JSFile
-                        && isStyleIndex(element)
-                        && element.node.firstChildNode?.elementType == JSTokenTypes.STRING_LITERAL
-            }
-
-            override fun isClassAcceptable(hintClass: Class<*>?): Boolean {
-                return JSLiteralExpression::class.java.isAssignableFrom(hintClass!!)
-            }
-        }
-    ))
+private val INDEXED_ACCESS_FILTER = PlatformPatterns
+    .psiElement(JSLiteralExpression::class.java)
+    .withParent(JSIndexedPropertyAccessExpression::class.java)
+    .inFile(PlatformPatterns.psiFile(JSFile::class.java))
 
 
 class CssModulesIndexedStylesVarPsiReferenceContributor : PsiReferenceContributor() {
@@ -96,4 +64,8 @@ class CssModulesIndexedStylesVarPsiReferenceContributor : PsiReferenceContributo
     }
 }
 
-fun isStyleIndex(element: JSLiteralExpression): Boolean = findReferenceStyleFile(element) !== null
+/**
+ * Check if the element is a style index expression (styles["className"]).
+ * This function is used by other parts of the codebase (e.g., annotator).
+ */
+fun isStyleIndex(element: JSLiteralExpression): Boolean = findReferenceStyleFile(element) != null
