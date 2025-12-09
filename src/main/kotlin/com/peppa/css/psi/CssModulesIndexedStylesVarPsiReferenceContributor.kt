@@ -1,7 +1,7 @@
-package com.example.ide.psi
+package com.peppa.css.psi
 
 
-import com.example.ide.completion.findReferenceStyleFile
+import com.peppa.css.completion.findReferenceStyleFile
 import com.intellij.lang.javascript.JSTokenTypes
 import com.intellij.lang.javascript.psi.JSFile
 import com.intellij.lang.javascript.psi.JSIndexedPropertyAccessExpression

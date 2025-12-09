@@ -1,4 +1,4 @@
-package com.example.ide.completion;
+package com.peppa.css.completion
 
 import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElement
@@ -19,29 +19,25 @@ const val DotChar = "."
 class CssModulesClassNameCompletionContributor : CompletionContributor() {
 
     init {
+        val language = PlatformPatterns
+            .psiElement()
+            .withLanguage(JavascriptLanguage.INSTANCE)
+
         extend(
             CompletionType.BASIC,
-            PlatformPatterns
-                .psiElement()
-                .withLanguage(JavascriptLanguage.INSTANCE)
-                // must in '' or ""
+            language
                 .withParent(JSLiteralExpression::class.java)
-                // styles["xxx"]
                 .withSuperParent(2, JSIndexedPropertyAccessExpression::class.java),
             CssModulesClassNameCompletionContributorProvider()
         )
         extend(
             CompletionType.BASIC,
-            PlatformPatterns
-                .psiElement()
-                .withLanguage(JavascriptLanguage.INSTANCE)
-                // styles.xxx
+            language
                 .withParent(JSReferenceExpression::class.java),
             CssModulesClassNameCompletionContributorWithDotProvider()
         )
     }
 
-    // styles["xxx"]
     private class CssModulesClassNameCompletionContributorProvider : CompletionProvider<CompletionParameters>() {
         override fun addCompletions(
             parameters: CompletionParameters,
@@ -54,7 +50,6 @@ class CssModulesClassNameCompletionContributor : CompletionContributor() {
         }
     }
 
-    // styles.xxx
     private class CssModulesClassNameCompletionContributorWithDotProvider : CompletionProvider<CompletionParameters>() {
         override fun addCompletions(
             parameters: CompletionParameters,
@@ -96,8 +91,6 @@ class CssModulesClassNameCompletionContributor : CompletionContributor() {
                 val tailOffset = context.tailOffset
                 val lookupString = item.lookupString
                 document.replaceString(dotPosOffset, tailOffset, "[$lookupString]")
-                // move cursor to the end of the inserted text
-                // 2 = [ + ]
                 editor.caretModel.moveToOffset(dotPosOffset + lookupString.length + 2)
             }
         }

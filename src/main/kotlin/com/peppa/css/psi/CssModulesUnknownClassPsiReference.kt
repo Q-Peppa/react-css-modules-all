@@ -1,6 +1,6 @@
-package com.example.ide.psi
+package com.peppa.css.psi
 
-import com.example.ide.completion.restoreAllSelector
+import com.peppa.css.completion.restoreAllSelector
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
 import com.intellij.psi.css.StylesheetFile

@@ -34,16 +34,16 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <lang.documentationProvider
-                implementationClass="com.example.ide.document.SimpleDocumentationProvider"
+                implementationClass="com.peppa.css.document.SimpleDocumentationProvider"
                 language="JavaScript"/>
         <!--  find reference -->
         <psi.referenceContributor
-                implementation="com.example.ide.psi.CssModulesIndexedStylesVarPsiReferenceContributor"
+                implementation="com.peppa.css.psi.CssModulesIndexedStylesVarPsiReferenceContributor"
                 language="JavaScript"/>
         <!-- supply completion  -->
         <completion.contributor language="JavaScript"
-                                implementationClass="com.example.ide.completion.CssModulesClassNameCompletionContributor"/>
+                                implementationClass="com.peppa.css.completion.CssModulesClassNameCompletionContributor"/>
         <!--   if not found reference ,  supply quick fix -->
-        <annotator language="JavaScript" implementationClass="com.example.ide.annotator.CssModulesClassAnnotator"/>
+        <annotator language="JavaScript" implementationClass="com.peppa.css.annotator.CssModulesClassAnnotator"/>
     </extensions>
 </idea-plugin>

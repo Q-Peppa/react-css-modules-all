@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [1.5.2] - 2025-12-10
+
+- 将所有相关类从com.example.ide包迁移至com.peppa.css包
+- 更新插件配置文件中的实现类路径
+- 优化CssModulesClassAnnotator中的条件判断逻辑
+- 改进SimpleCssSelectorFix中的光标定位和滚动逻辑
+- 简化样式表文件解析方法并提取公共函数
+- 移除冗余代码和不必要的导入语句
+- 更新测试类的包声明以匹配新的结构
+
 ## [1.5.1] - 2025-12-09
 
 - Extracted stylesheet parsing logic into a separate function `resolveStylesheetFromReference`
@@ -141,7 +151,8 @@
 - support a little complex parents selector
 - support css selector has pseudo
 
-[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.5.1...HEAD
+[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.5.2...HEAD
+[1.5.2]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.5.1...v1.5.2
 [1.5.1]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.3.0...v1.5.0
 [1.4.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.3.0...v1.4.0

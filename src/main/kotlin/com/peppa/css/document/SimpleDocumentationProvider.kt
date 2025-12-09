@@ -1,4 +1,4 @@
-package com.example.ide.document
+package com.peppa.css.document
 
 import com.intellij.lang.css.CSSLanguage
 import com.intellij.lang.documentation.AbstractDocumentationProvider

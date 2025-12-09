@@ -1,13 +1,13 @@
-package com.example.ide.annotator
+package com.peppa.css.annotator
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
+import com.intellij.codeInsight.hints.declarative.impl.DeclarativeInlayHintsPassFactory
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction
-import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.LogicalPosition
+import com.intellij.openapi.editor.ScrollType
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.css.CssElementFactory
 import com.intellij.psi.css.StylesheetFile
@@ -31,16 +31,19 @@ class SimpleCssSelectorFix(private val key: String, private val stylesheetFile: 
             rulesetText,
             stylesheetFile.language
         )
-        val afterRuleSet = WriteCommandAction.runWriteCommandAction<PsiElement?>(project) {
-            stylesheetFile.add(ruleset)
-        } ?: return
+
         stylesheetFile.navigate(true)
-        val offset = afterRuleSet.textOffset + rulesetText.indexOf("{") + 4
-        FileEditorManager.getInstance(project).getEditors(stylesheetFile.virtualFile).forEach {
-            if (it is TextEditor) {
-                it.editor.caretModel.moveToOffset(offset)
-            }
+        stylesheetFile.add(ruleset)
+
+        val newEditor = FileEditorManager.getInstance(project).selectedEditor ?:return;
+        if(newEditor is TextEditor) {
+            newEditor.editor.caretModel.moveToLogicalPosition(
+                LogicalPosition(newEditor.editor.document.lineCount-2, 0)
+            )
+            newEditor.editor.scrollingModel.scrollTo(newEditor.editor.caretModel.logicalPosition,ScrollType.MAKE_VISIBLE)
+            DeclarativeInlayHintsPassFactory.scheduleRecompute(editor,project)
+            DeclarativeInlayHintsPassFactory.scheduleRecompute(newEditor.editor,project)
         }
-        DaemonCodeAnalyzer.getInstance(project).restart(file)
+
     }
 }

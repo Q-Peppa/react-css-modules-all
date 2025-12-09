@@ -1,17 +1,17 @@
-package com.example.ide.annotator
+package com.peppa.css.annotator
 
-import com.example.ide.completion.resolveStylesheetFromReference
-import com.example.ide.psi.CssModuleClassReference
-import com.example.ide.psi.isStyleIndex
+import com.peppa.css.completion.resolveStylesheetFromReference
+import com.peppa.css.psi.CssModuleClassReference
+import com.peppa.css.psi.isStyleIndex
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.lang.javascript.psi.JSReferenceExpression
 import com.intellij.psi.PsiElement
-import com.intellij.psi.css.CssClass
 import com.intellij.psi.css.CssRuleset
 import org.jetbrains.annotations.NotNull
+import java.util.Objects
 
 
 const val MESSAGE = "Selector declarations is Empty"
@@ -48,10 +48,12 @@ class CssModulesClassAnnotator : Annotator {
         if (psiElement is JSLiteralExpression && isStyleIndex(psiElement)) {
             resolveUnknownClass(holder, psiElement)
             resolveEmptyClass(holder, psiElement)
+            return
         }
-        if (psiElement is JSReferenceExpression) {
+        if (psiElement is JSReferenceExpression && Objects.isNull(psiElement.reference?.resolve())) {
             val styleFile = resolveStylesheetFromReference(psiElement) ?: return
-            if (psiElement.reference?.resolve() !is CssClass) {
+
+
                 holder.newAnnotation(
                     HighlightSeverity.WEAK_WARNING,
                     "$UNKNOWN \"${psiElement.lastChild.text}\""
@@ -59,7 +61,7 @@ class CssModulesClassAnnotator : Annotator {
                     .range(psiElement.lastChild)
                     .withFix(SimpleCssSelectorFix(psiElement.lastChild.text, styleFile))
                     .create()
-            }
+
         }
     }
 }

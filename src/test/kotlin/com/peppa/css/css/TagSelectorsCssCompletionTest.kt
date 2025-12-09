@@ -1,4 +1,4 @@
-package com.example.ide.css
+package com.peppa.css.css
 
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase

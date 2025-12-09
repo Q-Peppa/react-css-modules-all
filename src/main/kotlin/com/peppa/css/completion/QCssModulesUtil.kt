@@ -1,4 +1,4 @@
-package com.example.ide.completion
+package com.peppa.css.completion
 
 import com.intellij.codeInsight.completion.PrioritizedLookupElement
 import com.intellij.codeInsight.lookup.LookupElement
@@ -10,6 +10,7 @@ import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.lang.javascript.psi.JSReferenceExpression
 import com.intellij.openapi.util.text.Strings
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiReference
 import com.intellij.psi.css.*
 import com.intellij.psi.css.impl.CssEscapeUtil
 import com.intellij.psi.css.impl.stubs.index.CssIndexUtil
@@ -48,7 +49,11 @@ fun restoreAllSelector(stylesheetFile: StylesheetFile): MutableMap<String, PsiEl
             }
             true
         }
-        CssIndexUtil.processAllSelectorSuffixes(CssSelectorSuffixType.CLASS, stylesheetFile.project, scope) { name, css ->
+        CssIndexUtil.processAllSelectorSuffixes(
+            CssSelectorSuffixType.CLASS,
+            stylesheetFile.project,
+            scope
+        ) { name, css ->
             of[name] = css.ruleset!!
             true
         }
@@ -79,21 +84,23 @@ fun buildLookupElementHelper(
     return PrioritizedLookupElement.withPriority(ele, CssCompletionUtil.CSS_SELECTOR_SUFFIX_PRIORITY.toDouble())
 }
 
+private fun toGetStylesheetFile(ref: PsiReference?): StylesheetFile? {
+    val resolve = ref?.resolve() as? ES6ImportedBinding ?: return null
+    return resolve.findReferencedElements().firstOrNull() as? StylesheetFile
+}
+
 /**
  * 解析引用处的样式文件。支持 styles["xxx"] 与 styles.xxx 两种用法，集中解析以避免重复逻辑。
  */
 fun resolveStylesheetFromReference(element: PsiElement?): StylesheetFile? = when (element) {
     is JSLiteralExpression -> {
-        // styles["xxx"]
         val callKey = (element.parent as? JSIndexedPropertyAccessExpression)?.firstChild as? JSReferenceExpression
             ?: return null
-        val binding = callKey.reference?.resolve() as? ES6ImportedBinding ?: return null
-        binding.findReferencedElements().firstOrNull() as? StylesheetFile
+        toGetStylesheetFile(callKey.reference)
     }
+
     is JSReferenceExpression -> {
-        // styles.xxx
-        val binding = element.firstChild?.reference?.resolve() as? ES6ImportedBinding ?: return null
-        binding.findReferencedElements().firstOrNull() as? StylesheetFile
+        toGetStylesheetFile(element.firstChild?.reference)
     }
     else -> null
 }
