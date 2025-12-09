@@ -1,1 +1,1 @@
-rootProject.name = "React Css Modules All"
+rootProject.name = "CSS Modules"
