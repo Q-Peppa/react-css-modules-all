@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull
 /**
  * Reference provider for styles["className"] syntax.
  * All validation logic is centralized here to avoid duplicate PSI resolution.
+ * // todo make a.b to CssModuleClassReference
  */
 class CssModuleIndexedReferenceProvider : PsiReferenceProvider() {
 

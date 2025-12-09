@@ -1,8 +1,5 @@
 package com.peppa.css.annotator
 
-import com.peppa.css.completion.resolveStylesheetFromReference
-import com.peppa.css.psi.CssModuleClassReference
-import com.peppa.css.psi.isStyleIndex
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
@@ -10,8 +7,10 @@ import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.lang.javascript.psi.JSReferenceExpression
 import com.intellij.psi.PsiElement
 import com.intellij.psi.css.CssRuleset
+import com.peppa.css.completion.resolveStylesheetFromReference
+import com.peppa.css.psi.CssModuleClassReference
+import com.peppa.css.psi.isStyleIndex
 import org.jetbrains.annotations.NotNull
-import java.util.Objects
 
 
 const val MESSAGE = "Selector declarations is Empty"
@@ -22,7 +21,6 @@ class CssModulesClassAnnotator : Annotator {
         val cssSelectorName = psiElement.stringValue?.trim().orEmpty()
         val reference = psiElement.reference
 
-        // Check if the reference is unresolved (CSS class doesn't exist)
         if (reference is CssModuleClassReference && reference.isUnresolved()) {
             val message = "$UNKNOWN \"$cssSelectorName\""
             holder.newAnnotation(HighlightSeverity.WARNING, message)
@@ -50,18 +48,16 @@ class CssModulesClassAnnotator : Annotator {
             resolveEmptyClass(holder, psiElement)
             return
         }
-        if (psiElement is JSReferenceExpression && Objects.isNull(psiElement.reference?.resolve())) {
+
+        if (psiElement is JSReferenceExpression && psiElement.reference?.resolve() == null) {
             val styleFile = resolveStylesheetFromReference(psiElement) ?: return
-
-
-                holder.newAnnotation(
-                    HighlightSeverity.WEAK_WARNING,
-                    "$UNKNOWN \"${psiElement.lastChild.text}\""
-                )
-                    .range(psiElement.lastChild)
-                    .withFix(SimpleCssSelectorFix(psiElement.lastChild.text, styleFile))
-                    .create()
-
+            holder.newAnnotation(
+                HighlightSeverity.WEAK_WARNING,
+                "$UNKNOWN \"${psiElement.lastChild.text}\""
+            )
+                .range(psiElement.lastChild)
+                .withFix(SimpleCssSelectorFix(psiElement.lastChild.text, styleFile))
+                .create()
         }
     }
 }
