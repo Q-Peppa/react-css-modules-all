@@ -165,20 +165,19 @@ fun buildLookupElementHelper(
     val lookupString = CssEscapeUtil.escapeSpecialCssChars(name)
     val lineNumber = (css as CssRuleset).selectors.first().lineNumber
     val lookup = if (isNeedWrapByChar) "'$lookupString'" else lookupString
-    val ele = LookupElementBuilder.createWithSmartPointer(lookup, css)
-        .bold()
-        .withPsiElement(css)
-        .withIcon(AllIcons.Xml.Css_class)
-        .withPresentableText(lookup)
-        .withCaseSensitivity(true)
-        .withTailText(" ".repeat(SpaceSize) + "($location:$lineNumber)", true)
-
-    return PrioritizedLookupElement.withPriority(ele, CssCompletionUtil.CSS_SELECTOR_SUFFIX_PRIORITY.toDouble())
+    return LookupElementBuilder.createWithSmartPointer(lookup, css).apply {
+        bold()
+        withPsiElement(css)
+        withIcon(AllIcons.Xml.Css_class)
+        withPresentableText(lookup)
+        withCaseSensitivity(true)
+        withTailText(" ".repeat(SpaceSize) + "($location:$lineNumber)", true)
+    }.let { PrioritizedLookupElement.withPriority(it, CssCompletionUtil.CSS_SELECTOR_SUFFIX_PRIORITY.toDouble()) }
 }
 
 private fun toGetStylesheetFile(ref: PsiReference?): StylesheetFile? {
     // 增强解析逻辑：支持直接 resolve 到 StylesheetFile、PsiFile，或 ES6ImportedBinding，
-    // 并尝试沿引用链继续解析，提升命中率和鲁棒性。
+    // 并尝试沿引用链继续解析，提升命中率��鲁棒性。
     val resolved = ref?.resolve() ?: return null
     return when (resolved) {
         is StylesheetFile -> resolved
@@ -191,26 +190,17 @@ private fun toGetStylesheetFile(ref: PsiReference?): StylesheetFile? {
     }
 }
 
-fun resolveStylesheetFromReference(element: PsiElement?): StylesheetFile? {
-    if (element == null) return null
-
-    // 字符串字面量的情况：查找最近的引用表达式（支持多种父级结构）
-    if (element is JSLiteralExpression) {
-        // 优先查找索引访问 foo["bar"] 的首子表达式
-        val indexed = PsiTreeUtil.getParentOfType(element, JSIndexedPropertyAccessExpression::class.java)
-        val candidateRef = (indexed?.firstChild as? JSReferenceExpression)
-            // 否则向上查找通用的 JSReferenceExpression（例如 foo.bar 或 更复杂结构）
-            ?: PsiTreeUtil.getParentOfType(element, JSReferenceExpression::class.java)
-
-        return toGetStylesheetFile(candidateRef?.reference)
+fun resolveStylesheetFromReference(element: PsiElement?): StylesheetFile? = element?.let {
+    when (it) {
+        is JSLiteralExpression -> {
+            val indexed = PsiTreeUtil.getParentOfType(it, JSIndexedPropertyAccessExpression::class.java)
+            val candidateRef = (indexed?.firstChild as? JSReferenceExpression)
+                ?: PsiTreeUtil.getParentOfType(it, JSReferenceExpression::class.java)
+            toGetStylesheetFile(candidateRef?.reference)
+        }
+        is JSReferenceExpression -> toGetStylesheetFile(it.reference ?: it.firstChild?.reference)
+        else -> null
     }
-
-    // 直接是引用表达式：优先用自身的 reference，再退回到 firstChild 的 reference（兼容旧逻辑）
-    if (element is JSReferenceExpression) {
-        return toGetStylesheetFile(element.reference ?: element.firstChild?.reference)
-    }
-
-    return null
 }
 
 /**
