@@ -28,24 +28,20 @@ class SimpleCssSelectorFix(private val key: String, private val stylesheetFile: 
         if (editor == null || file == null) return
 
         val rulesetText = "\n.$key {\n\t\t\n}"
-        val ruleset = CssElementFactory.getInstance(project).createRuleset(
-            rulesetText,
-            stylesheetFile.language
-        )
+        val ruleset = CssElementFactory.getInstance(project).createRuleset(rulesetText, stylesheetFile.language)
 
         stylesheetFile.navigate(true)
         stylesheetFile.add(ruleset)
-        val newEditor = FileEditorManager.getInstance(project).selectedEditor ?: return;
-        if (newEditor is TextEditor) {
-            newEditor.editor.caretModel.moveToLogicalPosition(
-                LogicalPosition(newEditor.editor.document.lineCount - 2, 0)
-            )
-            newEditor.editor.scrollingModel.scrollTo(
-                newEditor.editor.caretModel.logicalPosition,
-                ScrollType.MAKE_VISIBLE
-            )
-            DeclarativeInlayHintsPassFactory.scheduleRecompute(editor, project)
-            DeclarativeInlayHintsPassFactory.scheduleRecompute(newEditor.editor, project)
+
+        FileEditorManager.getInstance(project).selectedEditor?.let { newEditor ->
+            if (newEditor is TextEditor) {
+                newEditor.editor.apply {
+                    caretModel.moveToLogicalPosition(LogicalPosition(document.lineCount - 2, 0))
+                    scrollingModel.scrollTo(caretModel.logicalPosition, ScrollType.MAKE_VISIBLE)
+                }
+                DeclarativeInlayHintsPassFactory.scheduleRecompute(editor, project)
+                DeclarativeInlayHintsPassFactory.scheduleRecompute(newEditor.editor, project)
+            }
         }
     }
 }
