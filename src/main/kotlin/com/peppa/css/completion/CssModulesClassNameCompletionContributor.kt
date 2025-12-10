@@ -73,8 +73,8 @@ class CssModulesClassNameCompletionContributor : CompletionContributor() {
         private fun convertToBracketSyntax(context: InsertionContext, lookupString: String) {
             val document = context.editor.document
             val dotOffset = context.startOffset - 1
-            document.replaceString(dotOffset, context.tailOffset, "['$lookupString']")
-            context.editor.caretModel.moveToOffset(dotOffset + lookupString.length + 4)
+            document.replaceString(dotOffset, context.tailOffset, "[$lookupString]")
+            context.editor.caretModel.moveToOffset(context.tailOffset)
         }
     }
 

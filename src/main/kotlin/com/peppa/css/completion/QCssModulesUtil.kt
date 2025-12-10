@@ -165,14 +165,15 @@ fun buildLookupElementHelper(
     val lookupString = CssEscapeUtil.escapeSpecialCssChars(name)
     val lineNumber = (css as CssRuleset).selectors.first().lineNumber
     val lookup = if (isNeedWrapByChar) "'$lookupString'" else lookupString
-    return LookupElementBuilder.createWithSmartPointer(lookup, css).apply {
-        bold()
-        withPsiElement(css)
-        withIcon(AllIcons.Xml.Css_class)
-        withPresentableText(lookup)
-        withCaseSensitivity(true)
-        withTailText(" ".repeat(SpaceSize) + "($location:$lineNumber)", true)
-    }.let { PrioritizedLookupElement.withPriority(it, CssCompletionUtil.CSS_SELECTOR_SUFFIX_PRIORITY.toDouble()) }
+    val ele = LookupElementBuilder.createWithSmartPointer(lookup, css)
+        .bold()
+        .withPsiElement(css)
+        .withIcon(AllIcons.Xml.Css_class)
+        .withPresentableText(lookup)
+        .withCaseSensitivity(true)
+        .withTailText(" ".repeat(SpaceSize) + "($location:$lineNumber)", true)
+
+    return PrioritizedLookupElement.withPriority(ele, CssCompletionUtil.CSS_SELECTOR_SUFFIX_PRIORITY.toDouble())
 }
 
 private fun toGetStylesheetFile(ref: PsiReference?): StylesheetFile? {

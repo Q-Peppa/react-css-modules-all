@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [1.6.0] - 2025-12-10
+
+- fix css icon lose
+- fix completion with two dot
+
 ## [1.5.4] - 2025-12-10
 
 - 升级版本号到 1.5.4 并准备发布
@@ -160,7 +165,8 @@
 - support a little complex parents selector
 - support css selector has pseudo
 
-[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.5.4...HEAD
+[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.5.4...v1.6.0
 [1.5.4]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.5.3...v1.5.4
 [1.5.3]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.5.2...v1.5.3
 [1.5.2]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.5.1...v1.5.2
