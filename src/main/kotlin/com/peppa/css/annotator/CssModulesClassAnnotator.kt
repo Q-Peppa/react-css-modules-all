@@ -6,58 +6,44 @@ import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.lang.javascript.psi.JSReferenceExpression
 import com.intellij.psi.PsiElement
-import com.intellij.psi.css.CssRuleset
 import com.peppa.css.completion.resolveStylesheetFromReference
 import com.peppa.css.psi.CssModuleClassReference
 import com.peppa.css.psi.isStyleIndex
-import org.jetbrains.annotations.NotNull
 
-
-const val MESSAGE = "Selector declarations is Empty"
-const val UNKNOWN = "Unknown class name"
+private const val MESSAGE_UNKNOWN = "Unknown class name"
 
 class CssModulesClassAnnotator : Annotator {
-    private fun resolveUnknownClass(holder: AnnotationHolder, psiElement: JSLiteralExpression) {
-        val cssSelectorName = psiElement.stringValue?.trim().orEmpty()
-        val reference = psiElement.reference
 
-        if (reference is CssModuleClassReference && reference.isUnresolved()) {
-            val message = "$UNKNOWN \"$cssSelectorName\""
-            holder.newAnnotation(HighlightSeverity.WARNING, message)
-                .range(psiElement)
-                .withFix(SimpleCssSelectorFix(cssSelectorName, reference.stylesheetFile))
+    override fun annotate(psiElement: PsiElement, holder: AnnotationHolder) {
+        when (psiElement) {
+            is JSLiteralExpression if isStyleIndex(psiElement) ->
+                annotateStyleIndex(psiElement, holder)
+
+            is JSReferenceExpression -> annotateUnresolvedReference(psiElement, holder)
+        }
+    }
+
+    private fun annotateStyleIndex(element: JSLiteralExpression, holder: AnnotationHolder) {
+        val reference = element.reference as? CssModuleClassReference ?: return
+        val className = element.stringValue?.trim().orEmpty()
+
+        when {
+            reference.isUnresolved() -> holder.newAnnotation(HighlightSeverity.WARNING, "$MESSAGE_UNKNOWN \"$className\"")
+                .range(element)
+                .withFix(SimpleCssSelectorFix(className, reference.stylesheetFile))
                 .create()
         }
     }
 
-    private fun resolveEmptyClass(holder: AnnotationHolder, psiElement: JSLiteralExpression) {
-        val ruleset = psiElement.reference?.resolve()
-        if (ruleset is CssRuleset) {
-            val declarations = ruleset.block?.declarations
-            if (declarations.isNullOrEmpty()) {
-                holder.newAnnotation(HighlightSeverity.WEAK_WARNING, MESSAGE)
-                    .range(psiElement)
-                    .create()
-            }
-        }
-    }
+    private fun annotateUnresolvedReference(element: JSReferenceExpression, holder: AnnotationHolder) {
+        if (element.reference?.resolve() != null) return
 
-    override fun annotate(@NotNull psiElement: PsiElement, @NotNull holder: AnnotationHolder) {
-        if (psiElement is JSLiteralExpression && isStyleIndex(psiElement)) {
-            resolveUnknownClass(holder, psiElement)
-            resolveEmptyClass(holder, psiElement)
-            return
-        }
+        val styleFile = resolveStylesheetFromReference(element) ?: return
+        val className = element.lastChild.text
 
-        if (psiElement is JSReferenceExpression && psiElement.reference?.resolve() == null) {
-            val styleFile = resolveStylesheetFromReference(psiElement) ?: return
-            holder.newAnnotation(
-                HighlightSeverity.WEAK_WARNING,
-                "$UNKNOWN \"${psiElement.lastChild.text}\""
-            )
-                .range(psiElement.lastChild)
-                .withFix(SimpleCssSelectorFix(psiElement.lastChild.text, styleFile))
-                .create()
-        }
+        holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "$MESSAGE_UNKNOWN \"$className\"")
+            .range(element.lastChild)
+            .withFix(SimpleCssSelectorFix(className, styleFile))
+            .create()
     }
 }

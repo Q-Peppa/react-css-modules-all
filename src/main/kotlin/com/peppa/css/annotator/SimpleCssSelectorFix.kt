@@ -26,7 +26,8 @@ class SimpleCssSelectorFix(private val key: String, private val stylesheetFile: 
 
     override fun invoke(@NotNull project: Project, editor: Editor?, file: PsiFile?) {
         if (editor == null || file == null) return
-        val rulesetText = "\n.$key {\n    \n}"
+
+        val rulesetText = "\n.$key {\n\t\t\n}"
         val ruleset = CssElementFactory.getInstance(project).createRuleset(
             rulesetText,
             stylesheetFile.language
@@ -34,16 +35,17 @@ class SimpleCssSelectorFix(private val key: String, private val stylesheetFile: 
 
         stylesheetFile.navigate(true)
         stylesheetFile.add(ruleset)
-
-        val newEditor = FileEditorManager.getInstance(project).selectedEditor ?:return;
-        if(newEditor is TextEditor) {
+        val newEditor = FileEditorManager.getInstance(project).selectedEditor ?: return;
+        if (newEditor is TextEditor) {
             newEditor.editor.caretModel.moveToLogicalPosition(
-                LogicalPosition(newEditor.editor.document.lineCount-2, 0)
+                LogicalPosition(newEditor.editor.document.lineCount - 2, 0)
             )
-            newEditor.editor.scrollingModel.scrollTo(newEditor.editor.caretModel.logicalPosition,ScrollType.MAKE_VISIBLE)
-            DeclarativeInlayHintsPassFactory.scheduleRecompute(editor,project)
-            DeclarativeInlayHintsPassFactory.scheduleRecompute(newEditor.editor,project)
+            newEditor.editor.scrollingModel.scrollTo(
+                newEditor.editor.caretModel.logicalPosition,
+                ScrollType.MAKE_VISIBLE
+            )
+            DeclarativeInlayHintsPassFactory.scheduleRecompute(editor, project)
+            DeclarativeInlayHintsPassFactory.scheduleRecompute(newEditor.editor, project)
         }
-
     }
 }
