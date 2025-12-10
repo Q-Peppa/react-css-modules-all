@@ -9,90 +9,72 @@ import com.intellij.lang.javascript.psi.JSIndexedPropertyAccessExpression
 import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.lang.javascript.psi.JSReferenceExpression
 import com.intellij.patterns.PlatformPatterns
-import com.intellij.psi.PsiElement
 import com.intellij.psi.css.StylesheetFile
 import com.intellij.util.ProcessingContext
 
-const val SplitChar = "-"
-const val DotChar = "."
+private const val SPLIT_CHAR = "-"
+private const val DOT_CHAR = "."
 
 class CssModulesClassNameCompletionContributor : CompletionContributor() {
 
     init {
-        val language = PlatformPatterns
-            .psiElement()
-            .withLanguage(JavascriptLanguage.INSTANCE)
+        val jsPattern = PlatformPatterns.psiElement().withLanguage(JavascriptLanguage.INSTANCE)
 
         extend(
             CompletionType.BASIC,
-            language
+            jsPattern
                 .withParent(JSLiteralExpression::class.java)
                 .withSuperParent(2, JSIndexedPropertyAccessExpression::class.java),
-            CssModulesClassNameCompletionContributorProvider()
+            IndexAccessCompletionProvider()
         )
         extend(
             CompletionType.BASIC,
-            language
-                .withParent(JSReferenceExpression::class.java),
-            CssModulesClassNameCompletionContributorWithDotProvider()
+            jsPattern.withParent(JSReferenceExpression::class.java),
+            DotAccessCompletionProvider()
         )
     }
 
-    private class CssModulesClassNameCompletionContributorProvider : CompletionProvider<CompletionParameters>() {
+    private class IndexAccessCompletionProvider : CompletionProvider<CompletionParameters>() {
         override fun addCompletions(
             parameters: CompletionParameters,
             context: ProcessingContext,
             resultSet: CompletionResultSet
         ) {
-            val position = parameters.position
-            val stylesheetFile = findReferenceStyleFile(position.parent as JSLiteralExpression) ?: return
+            val literal = parameters.position.parent as? JSLiteralExpression ?: return
+            val stylesheetFile = findReferenceStyleFile(literal) ?: return
             resultSet.addAllElements(generateLookupElementList(stylesheetFile))
         }
     }
 
-    private class CssModulesClassNameCompletionContributorWithDotProvider : CompletionProvider<CompletionParameters>() {
+    private class DotAccessCompletionProvider : CompletionProvider<CompletionParameters>() {
         override fun addCompletions(
             parameters: CompletionParameters,
             context: ProcessingContext,
             resultSet: CompletionResultSet
         ) {
-
             val position = parameters.position
-            if (position.prevSibling is PsiElement
-                && position.prevSibling.text == DotChar
-                && position.prevSibling.prevSibling is JSReferenceExpression
-            ) {
-                val style = position.prevSibling.prevSibling
-                style.reference?.resolve()?.let { stylesFileImportStatement ->
-                    if (stylesFileImportStatement !is ES6ImportedBinding || stylesFileImportStatement.findReferencedElements()
-                            .isEmpty()
-                    ) return
-                    val first = stylesFileImportStatement.findReferencedElements().firstOrNull()
-                    first?.let {
-                        resultSet.addAllElements(generateLookupElementList(it as StylesheetFile, true).map { element ->
-                            // if choose completion with - , auto make to IndexedAccess
-                            LookupElementDecorator.withInsertHandler(element) { context, item ->
-                                StylesInsertHandler(item.lookupString.contains(SplitChar)).handleInsert(context, item)
-                            }
-                        })
+            val prevSibling = position.prevSibling ?: return
+            if (prevSibling.text != DOT_CHAR) return
+
+            val styleRef = prevSibling.prevSibling as? JSReferenceExpression ?: return
+            val binding = styleRef.reference?.resolve() as? ES6ImportedBinding ?: return
+            val stylesheetFile = binding.findReferencedElements().firstOrNull() as? StylesheetFile ?: return
+
+            val elements = generateLookupElementList(stylesheetFile, true).map { element ->
+                LookupElementDecorator.withInsertHandler(element) { ctx, item ->
+                    if (item.lookupString.contains(SPLIT_CHAR)) {
+                        convertToBracketSyntax(ctx, item.lookupString)
                     }
                 }
             }
+            resultSet.addAllElements(elements)
         }
-    }
 
-    private class StylesInsertHandler(private val needsBracketSyntax: Boolean) : InsertHandler<LookupElement> {
-        override fun handleInsert(context: InsertionContext, item: LookupElement) {
-            if (needsBracketSyntax) {
-                val editor = context.editor
-                val document = editor.document
-                val startOffset = context.startOffset
-                val dotPosOffset = startOffset - 1
-                val tailOffset = context.tailOffset
-                val lookupString = item.lookupString
-                document.replaceString(dotPosOffset, tailOffset, "[$lookupString]")
-                editor.caretModel.moveToOffset(dotPosOffset + lookupString.length + 2)
-            }
+        private fun convertToBracketSyntax(context: InsertionContext, lookupString: String) {
+            val document = context.editor.document
+            val dotOffset = context.startOffset - 1
+            document.replaceString(dotOffset, context.tailOffset, "['$lookupString']")
+            context.editor.caretModel.moveToOffset(dotOffset + lookupString.length + 4)
         }
     }
 
