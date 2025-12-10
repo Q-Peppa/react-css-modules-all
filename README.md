@@ -36,7 +36,6 @@ case it will be transformed css name case to camelCase
 
 ### SnapShot
 
-![1.jpg](src%2Fmain%2Fresources%2Fpic%2F1.jpg)
 ![2.jpg](src%2Fmain%2Fresources%2Fpic%2F2.jpg)
 ![3.jpg](src%2Fmain%2Fresources%2Fpic%2F3.jpg)
 ![4.jpg](src%2Fmain%2Fresources%2Fpic%2F4.png)
