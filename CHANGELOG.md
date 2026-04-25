@@ -2,6 +2,25 @@
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-04-26
+
+### Bug Fixes
+
+- fix: dot-to-bracket completion inserting escaped quotes (`styles[\'card-container\']`)
+- fix: rewrite documentation provider to cross-language EP per JetBrains SDK best practices
+- fix: remove `CssImport.getUriStrings()` usage causing `NoSuchMethodError` at runtime
+
+### Removed
+
+- remove: `@import`/`@use`/`@forward` cross-file resolution (API incompatibility)
+- remove: unknown-class annotator with quick-fix — class may originate from unresolved imports
+- remove: import-resolution tests and test resource fixtures
+
+### Code Quality
+
+- refactor: simplify `restoreAllSelector` to index-based `CssIndexUtil` processing only
+- docs: add CLAUDE.md with project build/test/architecture documentation
+
 ## [1.6.0] - 2025-12-10
 
 - fix css icon lose
