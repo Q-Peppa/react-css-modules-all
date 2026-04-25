@@ -1,15 +1,12 @@
 package com.peppa.css.completion
 
 import com.intellij.codeInsight.completion.*
-import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementDecorator
-import com.intellij.lang.ecmascript6.psi.ES6ImportedBinding
 import com.intellij.lang.javascript.JavascriptLanguage
 import com.intellij.lang.javascript.psi.JSIndexedPropertyAccessExpression
 import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.lang.javascript.psi.JSReferenceExpression
 import com.intellij.patterns.PlatformPatterns
-import com.intellij.psi.css.StylesheetFile
 import com.intellij.util.ProcessingContext
 
 private const val SPLIT_CHAR = "-"
@@ -57,8 +54,7 @@ class CssModulesClassNameCompletionContributor : CompletionContributor() {
             if (prevSibling.text != DOT_CHAR) return
 
             val styleRef = prevSibling.prevSibling as? JSReferenceExpression ?: return
-            val binding = styleRef.reference?.resolve() as? ES6ImportedBinding ?: return
-            val stylesheetFile = binding.findReferencedElements().firstOrNull() as? StylesheetFile ?: return
+            val stylesheetFile = resolveStylesheetFromReference(styleRef) ?: return
 
             val elements = generateLookupElementList(stylesheetFile, true).map { element ->
                 LookupElementDecorator.withInsertHandler(element) { ctx, item ->
@@ -73,7 +69,8 @@ class CssModulesClassNameCompletionContributor : CompletionContributor() {
         private fun convertToBracketSyntax(context: InsertionContext, lookupString: String) {
             val document = context.editor.document
             val dotOffset = context.startOffset - 1
-            document.replaceString(dotOffset, context.tailOffset, "[$lookupString]")
+            val name = lookupString.removeSurrounding("'").removeSurrounding("\"")
+            document.replaceString(dotOffset, context.tailOffset, "['$name']")
             context.editor.caretModel.moveToOffset(context.tailOffset)
         }
     }
