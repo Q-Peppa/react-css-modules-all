@@ -42,7 +42,5 @@
         <!-- supply completion  -->
         <completion.contributor language="JavaScript"
                                 implementationClass="com.peppa.css.completion.CssModulesClassNameCompletionContributor"/>
-        <!--   if not found reference ,  supply quick fix -->
-        <annotator language="JavaScript" implementationClass="com.peppa.css.annotator.CssModulesClassAnnotator"/>
     </extensions>
 </idea-plugin>
