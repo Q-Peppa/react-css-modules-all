@@ -24,9 +24,6 @@ import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.PathUtil
-import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.psi.PsiManager
-import java.io.File
 
 private fun recessivesClassInCssSelector(
     realSelector: CssSelector,
@@ -41,116 +38,36 @@ private fun recessivesClassInCssSelector(
     return true
 }
 
-private val IMPORT_STATEMENT_REGEX = Regex("@(?:import|use)[^;]*;")
-private val QUOTED_PATH_REGEX = Regex("['\"]([^'\"]+)['\"]")
-
-private fun resolveImportPaths(baseDir: File, projectBase: String?, importPath: String): List<File> {
-    // Normalize path segments
-    val cleanPath = importPath.replace("\\", "/")
-    val lastSlash = cleanPath.lastIndexOf('/')
-    val dirPart = if (lastSlash >= 0) cleanPath.take(lastSlash) else ""
-    val namePart = if (lastSlash >= 0) cleanPath.substring(lastSlash + 1) else cleanPath
-
-    val candidates = mutableListOf<String>()
-    val exts = listOf(".scss", ".sass", ".css")
-
-    // If importPath already has an extension, prefer that exact file and its partial
-    val hasExt = exts.any { namePart.endsWith(it) }
-    if (hasExt) {
-        candidates += cleanPath
-        // add partial with underscore
-        val idx = namePart.lastIndexOf('.')
-        val bare = if (idx >= 0) namePart.take(idx) else namePart
-        val ext = if (idx >= 0) namePart.substring(idx) else ""
-        val partial = if (dirPart.isEmpty()) "_${bare}${ext}" else "$dirPart/_${bare}${ext}"
-        candidates += partial
-    } else {
-        for (ext in exts) {
-            val p1 = if (dirPart.isEmpty()) "$namePart$ext" else "$dirPart/$namePart$ext"
-            val p2 = if (dirPart.isEmpty()) "_${namePart}$ext" else "$dirPart/_${namePart}$ext"
-            candidates += listOf(p1, p2)
-        }
-    }
-
-    // Also consider node-style ~ resolution relative to project base
-    val files = mutableListOf<File>()
-    for (c in candidates) {
-        // relative to baseDir
-        files += File(baseDir, c)
-        // if project base provided and import starts with ~ or not found, try project base
-        if (projectBase != null) {
-            files += File(projectBase, c)
-            if (c.startsWith("~")) files += File(projectBase, c.removePrefix("~"))
-        }
-    }
-    return files
-}
-
 /**
- * return all available css className in file map , foo-> some ruleset pointer
- * 支持递归解析 scss 的 @import 与 @use（有限的相对路径、partial 和扩展名尝试）
+ * Return all available CSS class names in the stylesheet, mapping className → ruleset pointer.
+ * Caches per file via CachedValuesManager.
  */
 fun restoreAllSelector(stylesheetFile: StylesheetFile): Map<String, SmartPsiElementPointer<PsiElement>> {
     val pointerManager = SmartPointerManager.getInstance(stylesheetFile.project)
-    val psiManager = PsiManager.getInstance(stylesheetFile.project)
-    val projectBase = stylesheetFile.project.basePath
 
     return CachedValuesManager.getCachedValue(stylesheetFile) {
-        val of = mutableMapOf<String, SmartPsiElementPointer<PsiElement>>()
+        val result = linkedMapOf<String, SmartPsiElementPointer<PsiElement>>()
         val scope = GlobalSearchScope.fileScope(stylesheetFile.project, stylesheetFile.virtualFile)
-        val dependencyFiles = mutableListOf<Any>(stylesheetFile)
 
-        // 处理当前文件的选择器
+        // Resolve parent selector (&) for SCSS/LESS nesting
         CssIndexUtil.processAmpersandSelectors(stylesheetFile.project, scope) { selector ->
             selector.processAmpersandEvaluatedSelectors { evaluated ->
-                recessivesClassInCssSelector(selector, evaluated, of, pointerManager)
+                recessivesClassInCssSelector(selector, evaluated, result, pointerManager)
             }
             true
         }
+
+        // Resolve all class selectors
         CssIndexUtil.processAllSelectorSuffixes(
             CssSelectorSuffixType.CLASS,
             stylesheetFile.project,
             scope
         ) { name, css ->
-            css.ruleset?.let { of[name] = pointerManager.createSmartPsiElementPointer(it) }
+            css.ruleset?.let { result[name] = pointerManager.createSmartPsiElementPointer(it) }
             true
         }
 
-        // 解析 @import / @use，递归合并
-        try {
-            val virtualFile = stylesheetFile.virtualFile
-            val baseDir = virtualFile?.let { File(it.path).parentFile } ?: File(stylesheetFile.containingDirectory?.virtualFile?.path ?: projectBase ?: "")
-            val text = stylesheetFile.text
-
-            // 找到所有 @import/@use 语句，然后提取每个语句中的所有引号路径
-            val imports = IMPORT_STATEMENT_REGEX.findAll(text).flatMap { stmt ->
-                QUOTED_PATH_REGEX.findAll(stmt.value).mapNotNull { it.groups[1]?.value }
-            }.toList()
-
-            val visited = mutableSetOf<String>()
-
-            fun collectFromImported(path: String) {
-                val candidates = resolveImportPaths(baseDir, projectBase, path)
-                for (f in candidates) {
-                    val abs = try { f.canonicalPath } catch (_: Exception) { f.absolutePath }
-                    if (abs in visited) continue
-                    if (!f.exists()) continue
-                    val vf = LocalFileSystem.getInstance().findFileByIoFile(f) ?: continue
-                    val psi = psiManager.findFile(vf) as? StylesheetFile ?: continue
-                    visited += abs
-                    dependencyFiles += psi
-                    // 合并被导入文件的选择器（利用被导入文件自身的缓存）
-                    val imported = restoreAllSelector(psi)
-                    for ((k, ptr) in imported) of.putIfAbsent(k, ptr)
-                }
-            }
-
-            for (imp in imports) collectFromImported(imp)
-        } catch (_: Exception) {
-            // 保守处理：若解析导入失败，不阻塞主流程
-        }
-
-        CachedValueProvider.Result.create(of.toMap(), *dependencyFiles.toTypedArray())
+        CachedValueProvider.Result.create(result.toMap(), stylesheetFile)
     }
 }
 
@@ -163,7 +80,7 @@ fun buildLookupElementHelper(
     isNeedWrapByChar: Boolean = false
 ): LookupElement {
     val lookupString = CssEscapeUtil.escapeSpecialCssChars(name)
-    val lineNumber = (css as CssRuleset).selectors.first().lineNumber
+    val lineNumber = (css as? CssRuleset)?.selectors?.firstOrNull()?.lineNumber ?: 0
     val lookup = if (isNeedWrapByChar) "'$lookupString'" else lookupString
     val ele = LookupElementBuilder.createWithSmartPointer(lookup, css)
         .bold()
@@ -177,15 +94,12 @@ fun buildLookupElementHelper(
 }
 
 private fun toGetStylesheetFile(ref: PsiReference?): StylesheetFile? {
-    // 增强解析逻辑：支持直接 resolve 到 StylesheetFile、PsiFile，或 ES6ImportedBinding，
-    // 并尝试沿引用链继续解析，提升命中率��鲁棒性。
     val resolved = ref?.resolve() ?: return null
     return when (resolved) {
         is StylesheetFile -> resolved
         is ES6ImportedBinding -> resolved.findReferencedElements().firstOrNull() as? StylesheetFile
         is PsiFile -> null
         else -> {
-            // 作为兜底：如果 resolve 到了一个引用表达式（alias 等），尝试继续解析一次
             (resolved as? JSReferenceExpression)?.reference?.resolve() as? StylesheetFile
         }
     }
