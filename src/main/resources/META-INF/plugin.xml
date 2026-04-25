@@ -33,9 +33,8 @@
     <depends>com.intellij.css</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <lang.documentationProvider
-                implementationClass="com.peppa.css.document.SimpleDocumentationProvider"
-                language="JavaScript"/>
+        <documentationProvider
+                implementationClass="com.peppa.css.document.SimpleDocumentationProvider"/>
         <!--  find reference -->
         <psi.referenceContributor
                 implementation="com.peppa.css.psi.CssModulesIndexedStylesVarPsiReferenceContributor"
