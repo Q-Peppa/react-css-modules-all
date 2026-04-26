@@ -1,0 +1,5 @@
+@import "./cycle-b.css";
+
+.cycleA {
+  color: black;
+}

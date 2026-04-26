@@ -4,16 +4,15 @@
 ![Rating](https://img.shields.io/jetbrains/plugin/r/rating/react.css.module.all)
 ![Version](https://img.shields.io/jetbrains/plugin/v/react.css.module.all)
 
-IntelliJ/WebStorm plugin for CSS Modules in JavaScript and TypeScript. Provides code completion, go-to-definition navigation, quick documentation, and missing-class quick fixes for `import styles from './file.css'`.
+IntelliJ/WebStorm plugin for CSS Modules in JavaScript and TypeScript. Provides code completion, go-to-definition navigation, and quick documentation for `import styles from './file.css'`.
 
 ## Features
 
 - **Completion** — class name completion for bracket syntax (`styles['...']`) and dot syntax (`styles....`); hyphenated names auto-convert to bracket syntax on insertion
 - **Navigation** — Ctrl+Click / Go to Definition on a class name jumps to the CSS ruleset
 - **Quick documentation** — hover over a class name to see the corresponding CSS block
-- **Annotations** — unknown class names are highlighted with a quick fix to create the missing ruleset
-- **Sass/SCSS/LESS** — resolves parent selectors (`&`), `@import`, `@use`, and `@forward`
-- **Circular import safety** — gracefully short-circuits circular `@import`/`@use` chains
+- **CSS imports** — resolves selectors from CSS `@import` chains
+- **Circular import safety** — gracefully short-circuits circular CSS `@import` chains
 
 ## Install
 

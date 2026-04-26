@@ -1,0 +1,9 @@
+@import "./imported.css";
+
+.localCard {
+  display: block;
+}
+
+.sharedCard {
+  display: grid;
+}

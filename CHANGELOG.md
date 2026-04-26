@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+## [1.7.1] - 2026-04-26
+
+### Bug Fixes
+
+- fix: restore completion stability by removing runtime linkage to Sass/SCSS PSI classes
+- fix: resolve selectors from CSS `@import` chains without binding to version-specific `CssImport.resolve()` ABI
+
+### Tests
+
+- test: add completion coverage for CSS `@import` and circular `@import` chains
+
+### Docs
+
+- docs: align README, plugin metadata, and CLAUDE.md with the current CSS-only feature scope
+
 ## [1.7.0] - 2026-04-26
 
 ### Bug Fixes
@@ -184,7 +199,9 @@
 - support a little complex parents selector
 - support css selector has pseudo
 
-[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.7.1...HEAD
+[1.7.1]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.7.0...v1.7.1
+[1.7.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.5.4...v1.6.0
 [1.5.4]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.5.3...v1.5.4
 [1.5.3]: https://github.com/Q-Peppa/react-css-modules-all/compare/v1.5.2...v1.5.3

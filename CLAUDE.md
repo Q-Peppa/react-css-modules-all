@@ -37,9 +37,6 @@ This is an IntelliJ Platform plugin that provides CSS Modules intelligence for J
 - `IndexAccessCompletionProvider` for bracket syntax (`styles['...']`) — matches literal inside indexed access
 - `DotAccessCompletionProvider` for dot syntax (`styles.className`) — matches reference expressions preceded by `.`; auto-converts hyphenated names to bracket syntax on insertion
 
-### Annotation & quick fix (warnings on unknown classes)
-**Entry:** `CssModulesClassAnnotator` — for both bracket and dot syntax, checks if the referenced class exists in the stylesheet. If not, shows a warning with `SimpleCssSelectorFix` which creates the missing CSS ruleset and navigates the editor to it.
-
 ### Hover documentation
 **Entry:** `SimpleDocumentationProvider` — renders the CSS ruleset content when hovering over a class name in JS/TS.
 
@@ -47,7 +44,7 @@ This is an IntelliJ Platform plugin that provides CSS Modules intelligence for J
 
 `src/main/kotlin/com/peppa/css/completion/QCssModulesUtil.kt` is the central utility file:
 
-- **`restoreAllSelector(stylesheetFile)`** — parses a stylesheet and returns a map of class name → pointer to CSS ruleset. Handles `&` parent selectors (SCSS/LESS) via `processAmpersandSelectors`, plain class selectors via `processAllSelectorSuffixes`, and recursively resolves `@import`/`@use` statements (with partial/underscore naming conventions and `~` node-style resolution).
+- **`restoreAllSelector(stylesheetFile)`** — parses a stylesheet and returns a map of class name → pointer to CSS ruleset. Handles nested selector expansion via `processAmpersandSelectors`, plain class selectors via `processAllSelectorSuffixes`, and recursively resolves CSS `@import` statements.
 - **`findReferenceStyleFile(element)`** — resolves a JS expression back to the `StylesheetFile` it imports (handles direct imports, default imports, re-exports).
 - **`generateLookupElementList(stylesheetFile)`** — builds completion `LookupElement`s from the parsed selector map.
 

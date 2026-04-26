@@ -47,28 +47,67 @@ fun restoreAllSelector(stylesheetFile: StylesheetFile): Map<String, SmartPsiElem
 
     return CachedValuesManager.getCachedValue(stylesheetFile) {
         val result = linkedMapOf<String, SmartPsiElementPointer<PsiElement>>()
-        val scope = GlobalSearchScope.fileScope(stylesheetFile.project, stylesheetFile.virtualFile)
+        val dependencies = linkedSetOf<PsiElement>()
+        val visitedFiles = linkedSetOf<StylesheetFile>()
+        collectSelectorsRecursively(stylesheetFile, result, pointerManager, visitedFiles, dependencies)
 
-        // Resolve parent selector (&) for SCSS/LESS nesting
-        CssIndexUtil.processAmpersandSelectors(stylesheetFile.project, scope) { selector ->
-            selector.processAmpersandEvaluatedSelectors { evaluated ->
-                recessivesClassInCssSelector(selector, evaluated, result, pointerManager)
-            }
-            true
-        }
-
-        // Resolve all class selectors
-        CssIndexUtil.processAllSelectorSuffixes(
-            CssSelectorSuffixType.CLASS,
-            stylesheetFile.project,
-            scope
-        ) { name, css ->
-            css.ruleset?.let { result[name] = pointerManager.createSmartPsiElementPointer(it) }
-            true
-        }
-
-        CachedValueProvider.Result.create(result.toMap(), stylesheetFile)
+        CachedValueProvider.Result.create(result.toMap(), *dependencies.toTypedArray())
     }
+}
+
+private fun collectSelectorsRecursively(
+    stylesheetFile: StylesheetFile,
+    result: MutableMap<String, SmartPsiElementPointer<PsiElement>>,
+    pointerManager: SmartPointerManager,
+    visitedFiles: MutableSet<StylesheetFile>,
+    dependencies: MutableSet<PsiElement>
+) {
+    if (!visitedFiles.add(stylesheetFile)) return
+    dependencies += stylesheetFile
+
+    val scope = GlobalSearchScope.fileScope(stylesheetFile.project, stylesheetFile.virtualFile)
+
+    CssIndexUtil.processAmpersandSelectors(stylesheetFile.project, scope) { selector ->
+        selector.processAmpersandEvaluatedSelectors { evaluated ->
+            recessivesClassInCssSelector(selector, evaluated, result, pointerManager)
+        }
+        true
+    }
+
+    CssIndexUtil.processAllSelectorSuffixes(
+        CssSelectorSuffixType.CLASS,
+        stylesheetFile.project,
+        scope
+    ) { name, css ->
+        css.ruleset?.let { result[name] = pointerManager.createSmartPsiElementPointer(it) }
+        true
+    }
+
+    findImportedStylesheetFiles(stylesheetFile).forEach { importedFile ->
+        collectSelectorsRecursively(importedFile, result, pointerManager, visitedFiles, dependencies)
+    }
+}
+
+private fun findImportedStylesheetFiles(stylesheetFile: StylesheetFile): Sequence<StylesheetFile> {
+    return PsiTreeUtil.findChildrenOfType(stylesheetFile, CssImport::class.java).asSequence()
+        .flatMap { resolveCssImportTargets(it) }
+        .mapNotNull { it as? StylesheetFile }
+}
+
+private fun resolveCssImportTargets(cssImport: CssImport): Sequence<PsiFile> {
+    val resolvedByMethod = runCatching {
+        CssImport::class.java.getMethod("resolve").invoke(cssImport) as? Array<*>
+    }.getOrNull()
+        ?.asSequence()
+        ?.mapNotNull { it as? PsiFile }
+
+    if (resolvedByMethod != null) {
+        return resolvedByMethod
+    }
+
+    return cssImport.uriElements.asSequence()
+        .flatMap { uriElement -> uriElement.references.asSequence() }
+        .mapNotNull { it.resolve() as? PsiFile }
 }
 
 

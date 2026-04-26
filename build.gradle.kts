@@ -18,6 +18,9 @@ kotlin {
 
 
 repositories {
+    maven(url = uri("/home/demo/jetbrains-mirror/local-maven"))
+    maven(url = "https://maven.aliyun.com/repository/public")
+    maven(url = "https://maven.aliyun.com/repository/central")
     mavenCentral()
     intellijPlatform {
         defaultRepositories()
@@ -31,8 +34,13 @@ dependencies {
     intellijPlatform {
         webstorm("2024.2")
         bundledPlugin("JavaScript")
-        bundledPlugin("org.jetbrains.plugins.sass")
         testFramework(TestFrameworkType.Platform)
+    }
+}
+
+tasks.test {
+    testLogging {
+        showStandardStreams = true
     }
 }
 
